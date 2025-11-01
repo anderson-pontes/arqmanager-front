@@ -1,0 +1,37 @@
+import type { Colaborador } from '@/types';
+
+export const mockColaboradores: Colaborador[] = [
+    {
+        id: 1,
+        nome: 'Ana Silva',
+        email: 'ana.silva@arquiteturadesign.com.br',
+        cpf: '123.456.789-00',
+        telefone: '(11) 98765-4321',
+        dataNascimento: '1985-03-15',
+        perfil: 'Administrador',
+        ativo: true,
+        foto: '/avatars/ana.jpg',
+    },
+    {
+        id: 2,
+        nome: 'Carlos Mendes',
+        email: 'carlos.mendes@arquiteturadesign.com.br',
+        cpf: '234.567.890-11',
+        telefone: '(11) 98765-4322',
+        dataNascimento: '1990-07-22',
+        perfil: 'Arquiteto',
+        ativo: true,
+        foto: '/avatars/carlos.jpg',
+    },
+    {
+        id: 3,
+        nome: 'Beatriz Costa',
+        email: 'beatriz.costa@arquiteturadesign.com.br',
+        cpf: '345.678.901-22',
+        telefone: '(11) 98765-4323',
+        dataNascimento: '1988-11-30',
+        perfil: 'Designer',
+        ativo: true,
+        foto: '/avatars/beatriz.jpg',
+    },
+];
