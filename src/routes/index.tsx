@@ -3,6 +3,11 @@ import { Layout } from '@/components/layout/Layout';
 import { PrivateRoute } from './PrivateRoute';
 import { Login } from '@/pages/auth/Login';
 import { Dashboard } from '@/pages/dashboard/Dashboard';
+import { ColaboradoresList } from '@/pages/colaboradores/ColaboradoresList';
+import { ColaboradorForm } from '@/pages/colaboradores/ColaboradorForm';
+import { ClientesList } from '@/pages/clientes/ClientesList';
+import { ClienteForm } from '@/pages/clientes/ClienteForm';
+import { ClienteDetail } from '@/pages/clientes/ClienteDetail';
 
 export const router = createBrowserRouter([
     {
@@ -25,20 +30,35 @@ export const router = createBrowserRouter([
                 path: 'dashboard',
                 element: <Dashboard />,
             },
+            {
+                path: 'colaboradores',
+                element: <ColaboradoresList />,
+            },
+            {
+                path: 'colaboradores/novo',
+                element: <ColaboradorForm />,
+            },
+            {
+                path: 'colaboradores/:id/editar',
+                element: <ColaboradorForm />,
+            },
+            {
+                path: 'clientes',
+                element: <ClientesList />,
+            },
+            {
+                path: 'clientes/novo',
+                element: <ClienteForm />,
+            },
+            {
+                path: 'clientes/:id',
+                element: <ClienteDetail />,
+            },
+            {
+                path: 'clientes/:id/editar',
+                element: <ClienteForm />,
+            },
             // TODO: Adicionar outras rotas conforme forem criadas
-            // {
-            //   path: 'clientes',
-            //   element: <ClientesList />,
-            // },
-            // {
-            //   path: 'clientes/:id',
-            //   element: <ClienteDetail />,
-            // },
-            // {
-            //   path: 'projetos',
-            //   element: <ProjetosList />,
-            // },
-            // ... outras rotas
         ],
     },
     {

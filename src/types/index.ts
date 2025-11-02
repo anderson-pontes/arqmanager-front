@@ -53,7 +53,7 @@ export interface Cliente {
     inscricaoMunicipal?: string;
     indicadoPor?: string;
     ativo: boolean;
-    dataCadastro: string;
+    dataCadastro?: string;
 }
 
 export interface Status {
@@ -228,7 +228,10 @@ export type ProjetoForm = Omit<
     equipeIds: number[];
 };
 
-export type PropostaForm = Omit<Proposta, 'id' | 'cliente' | 'servico' | 'etapas'> & {
+export type PropostaForm = Omit<
+    Proposta,
+    'id' | 'cliente' | 'servico' | 'etapas'
+> & {
     clienteId: number;
     servicoId: number;
 };
