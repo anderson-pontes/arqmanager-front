@@ -66,16 +66,49 @@ export function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-            <Card className="w-full max-w-md">
+        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-purple-50 via-white to-purple-100">
+            {/* Formas Geométricas de Fundo - Inspiradas em Arquitetura */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                {/* Retângulos grandes - Estruturas */}
+                <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rotate-12 rounded-3xl transform translate-x-32 -translate-y-32" />
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/10 -rotate-12 rounded-3xl transform -translate-x-24 translate-y-24" />
+
+                {/* Círculos - Elementos modernos */}
+                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-200/20 rounded-full blur-3xl" />
+                <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-purple-300/15 rounded-full blur-3xl" />
+
+                {/* Linhas e grades - Plantas arquitetônicas */}
+                <div className="absolute top-1/3 right-1/3 w-48 h-48 border-2 border-primary/10 rotate-45 rounded-lg" />
+                <div className="absolute bottom-1/3 left-1/3 w-40 h-40 border-2 border-primary/10 -rotate-45 rounded-lg" />
+
+                {/* Pequenos quadrados - Detalhes */}
+                <div className="absolute top-20 left-20 w-16 h-16 bg-primary/5 rounded-lg rotate-12" />
+                <div className="absolute bottom-20 right-20 w-20 h-20 bg-primary/5 rounded-lg -rotate-12" />
+                <div className="absolute top-1/2 right-20 w-12 h-12 bg-primary/10 rounded-full" />
+                <div className="absolute bottom-1/2 left-20 w-14 h-14 bg-primary/10 rounded-full" />
+
+                {/* Triângulos - Telhados */}
+                <div className="absolute top-40 right-40 w-0 h-0 border-l-[40px] border-l-transparent border-r-[40px] border-r-transparent border-b-[60px] border-b-primary/5 rotate-12" />
+                <div className="absolute bottom-40 left-40 w-0 h-0 border-l-[50px] border-l-transparent border-r-[50px] border-r-transparent border-b-[70px] border-b-primary/5 -rotate-12" />
+            </div>
+
+            {/* Card de Login - Com backdrop blur para efeito glassmorphism */}
+            <Card className="w-full max-w-md relative z-10 shadow-2xl backdrop-blur-sm bg-white/95">
                 <CardHeader className="space-y-1">
-                    <div className="flex items-center justify-center mb-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-xl">
-                            ARQ
+                    <div className="flex items-center justify-center mb-6">
+                        <div className="relative">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-purple-600 text-primary-foreground font-bold text-2xl shadow-lg">
+                                ARQ
+                            </div>
+                            {/* Detalhe geométrico no logo */}
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-400 rounded-full" />
+                            <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-purple-300 rounded-sm rotate-45" />
                         </div>
                     </div>
-                    <CardTitle className="text-2xl text-center">ARQManager</CardTitle>
-                    <CardDescription className="text-center">
+                    <CardTitle className="text-3xl text-center font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                        ARQManager
+                    </CardTitle>
+                    <CardDescription className="text-center text-base">
                         Entre com suas credenciais para acessar o sistema
                     </CardDescription>
                 </CardHeader>
