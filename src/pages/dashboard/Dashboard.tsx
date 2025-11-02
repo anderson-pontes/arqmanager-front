@@ -65,7 +65,7 @@ export function Dashboard() {
             {/* Stats Grid */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 mb-6">
                 {stats.map((stat) => (
-                    <Card key={stat.title}>
+                    <Card key={stat.title} className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg hover:shadow-xl transition-shadow">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">
                                 {stat.title}
@@ -83,7 +83,7 @@ export function Dashboard() {
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Projetos em Andamento */}
-                <Card>
+                <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
                     <CardHeader>
                         <CardTitle>Projetos em Andamento</CardTitle>
                     </CardHeader>
@@ -109,7 +109,7 @@ export function Dashboard() {
                 </Card>
 
                 {/* Projetos Atrasados */}
-                <Card>
+                <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <AlertCircle className="h-5 w-5 text-red-600" />
@@ -139,7 +139,7 @@ export function Dashboard() {
                 </Card>
 
                 {/* Aniversariantes */}
-                <Card>
+                <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Calendar className="h-5 w-5" />
@@ -167,7 +167,7 @@ export function Dashboard() {
                 </Card>
 
                 {/* Pagamentos Pendentes */}
-                <Card>
+                <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <DollarSign className="h-5 w-5" />

@@ -66,7 +66,7 @@ export function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gradient-to-br from-purple-50 via-white to-purple-100">
+        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-linear-to-br from-purple-50 via-white to-purple-100">
             {/* Formas Geométricas de Fundo - Inspiradas em Arquitetura */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {/* Retângulos grandes - Estruturas */}
@@ -88,8 +88,8 @@ export function Login() {
                 <div className="absolute bottom-1/2 left-20 w-14 h-14 bg-primary/10 rounded-full" />
 
                 {/* Triângulos - Telhados */}
-                <div className="absolute top-40 right-40 w-0 h-0 border-l-[40px] border-l-transparent border-r-[40px] border-r-transparent border-b-[60px] border-b-primary/5 rotate-12" />
-                <div className="absolute bottom-40 left-40 w-0 h-0 border-l-[50px] border-l-transparent border-r-[50px] border-r-transparent border-b-[70px] border-b-primary/5 -rotate-12" />
+                <div className="absolute top-40 right-40 w-0 h-0 border-l-40 border-l-transparent border-r-40 border-r-transparent border-b-60 border-b-primary/5 rotate-12" />
+                <div className="absolute bottom-40 left-40 w-0 h-0 border-l-50 border-l-transparent border-r-50 border-r-transparent border-b-70 border-b-primary/5 -rotate-12" />
             </div>
 
             {/* Card de Login - Com backdrop blur para efeito glassmorphism */}
@@ -97,7 +97,7 @@ export function Login() {
                 <CardHeader className="space-y-1">
                     <div className="flex items-center justify-center mb-6">
                         <div className="relative">
-                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-purple-600 text-primary-foreground font-bold text-2xl shadow-lg">
+                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-purple-600 text-primary-foreground font-bold text-2xl shadow-lg">
                                 ARQ
                             </div>
                             {/* Detalhe geométrico no logo */}
@@ -105,7 +105,7 @@ export function Login() {
                             <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-purple-300 rounded-sm rotate-45" />
                         </div>
                     </div>
-                    <CardTitle className="text-3xl text-center font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                    <CardTitle className="text-3xl text-center font-bold bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                         ARQManager
                     </CardTitle>
                     <CardDescription className="text-center text-base">
