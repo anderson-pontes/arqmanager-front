@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ import { Plus, Search, Mail, Phone, Edit, Trash2, KeyRound } from 'lucide-react'
 import { mockColaboradores } from '@/data';
 import { getInitials, formatPhone } from '@/utils/formatters';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { Pagination } from '@/components/common/Pagination';
 import { toast } from 'sonner';
 
 export function ColaboradoresList() {
@@ -33,12 +34,33 @@ export function ColaboradoresList() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<number | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
 
-    const filteredColaboradores = colaboradores.filter((colab) =>
-        colab.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        colab.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        colab.perfil.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredColaboradores = useMemo(() => {
+        return colaboradores.filter((colab) =>
+            colab.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            colab.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            colab.perfil.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [colaboradores, searchTerm]);
+
+    const totalPages = Math.ceil(filteredColaboradores.length / pageSize);
+
+    const paginatedColaboradores = useMemo(() => {
+        const startIndex = (currentPage - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        return filteredColaboradores.slice(startIndex, endIndex);
+    }, [filteredColaboradores, currentPage, pageSize]);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const handlePageSizeChange = (newPageSize: number) => {
+        setPageSize(newPageSize);
+        setCurrentPage(1);
+    };
 
     const handleDelete = (id: number) => {
         setSelectedId(id);
@@ -120,7 +142,7 @@ export function ColaboradoresList() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredColaboradores.map((colaborador) => (
+                            {paginatedColaboradores.map((colaborador) => (
                                 <TableRow
                                     key={colaborador.id}
                                     className="cursor-pointer hover:bg-accent/50"
@@ -218,6 +240,17 @@ export function ColaboradoresList() {
                                 Nenhum colaborador encontrado
                             </p>
                         </div>
+                    )}
+
+                    {filteredColaboradores.length > 0 && (
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            pageSize={pageSize}
+                            totalItems={filteredColaboradores.length}
+                            onPageChange={handlePageChange}
+                            onPageSizeChange={handlePageSizeChange}
+                        />
                     )}
                 </CardContent>
             </Card>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,7 @@ import { Plus, Search, Mail, Phone, Edit, Trash2, MapPin, Building2, User } from
 import { mockClientes } from '@/data';
 import { getInitials, formatPhone, formatCPF, formatCNPJ } from '@/utils/formatters';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { Pagination } from '@/components/common/Pagination';
 import { toast } from 'sonner';
 
 export function ClientesList() {
@@ -32,13 +33,34 @@ export function ClientesList() {
     const [clientes] = useState(mockClientes);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<number | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
 
-    const filteredClientes = clientes.filter((cliente) =>
-        cliente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cliente.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cliente.identificacao.includes(searchTerm) ||
-        cliente.endereco.cidade.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredClientes = useMemo(() => {
+        return clientes.filter((cliente) =>
+            cliente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            cliente.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            cliente.identificacao.includes(searchTerm) ||
+            cliente.endereco.cidade.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [clientes, searchTerm]);
+
+    const totalPages = Math.ceil(filteredClientes.length / pageSize);
+
+    const paginatedClientes = useMemo(() => {
+        const startIndex = (currentPage - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        return filteredClientes.slice(startIndex, endIndex);
+    }, [filteredClientes, currentPage, pageSize]);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const handlePageSizeChange = (newPageSize: number) => {
+        setPageSize(newPageSize);
+        setCurrentPage(1);
+    };
 
     const handleDelete = (id: number) => {
         setSelectedId(id);
@@ -96,7 +118,7 @@ export function ClientesList() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {filteredClientes.map((cliente) => (
+                            {paginatedClientes.map((cliente) => (
                                 <TableRow
                                     key={cliente.id}
                                     className="cursor-pointer hover:bg-accent/50"
@@ -191,6 +213,17 @@ export function ClientesList() {
                         <div className="text-center py-12">
                             <p className="text-muted-foreground">Nenhum cliente encontrado</p>
                         </div>
+                    )}
+
+                    {filteredClientes.length > 0 && (
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            pageSize={pageSize}
+                            totalItems={filteredClientes.length}
+                            onPageChange={handlePageChange}
+                            onPageSizeChange={handlePageSizeChange}
+                        />
                     )}
                 </CardContent>
             </Card>
