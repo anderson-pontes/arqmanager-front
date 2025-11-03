@@ -273,3 +273,60 @@ export interface AuthResponse {
     accessToken: string;
     refreshToken: string;
 }
+
+// Tipos Financeiros
+export interface ContaBancaria {
+    id: number;
+    nome: string;
+    banco: string;
+    agencia: string;
+    conta: string;
+    tipo: 'Corrente' | 'Poupança' | 'Investimento' | 'Caixa';
+    saldoInicial: number;
+    saldoAtual: number;
+    ativo: boolean;
+    cor?: string;
+}
+
+export interface CategoriaFinanceira {
+    id: number;
+    nome: string;
+    tipo: 'Receita' | 'Despesa';
+    cor: string;
+    icone?: string;
+    ativo: boolean;
+}
+
+export interface Movimentacao {
+    id: number;
+    tipo: 'Receita' | 'Despesa' | 'Transferência';
+    descricao: string;
+    valor: number;
+    data: string;
+    dataPagamento?: string;
+    categoria: CategoriaFinanceira;
+    conta: ContaBancaria;
+    contaDestino?: ContaBancaria; // Para transferências
+    status: 'Pendente' | 'Pago' | 'Cancelado';
+    formaPagamento: string;
+    observacao?: string;
+    anexo?: string;
+    recorrente: boolean;
+    projeto?: {
+        id: number;
+        numero: string;
+        cliente: string;
+    };
+}
+
+export interface ResumoFinanceiro {
+    totalReceitas: number;
+    totalDespesas: number;
+    saldo: number;
+    receitasPendentes: number;
+    despesasPendentes: number;
+    contasBancarias: {
+        conta: string;
+        saldo: number;
+    }[];
+}

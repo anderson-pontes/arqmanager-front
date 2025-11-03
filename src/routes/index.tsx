@@ -9,6 +9,10 @@ import { ColaboradorDetail } from '@/pages/colaboradores/ColaboradorDetail';
 import { ClientesList } from '@/pages/clientes/ClientesList';
 import { ClienteForm } from '@/pages/clientes/ClienteForm';
 import { ClienteDetail } from '@/pages/clientes/ClienteDetail';
+import { ContasList } from '@/pages/financeiro/contas/ContasList';
+import { ContaForm } from '@/pages/financeiro/contas/ContaForm';
+import { ContaDetail } from '@/pages/financeiro/contas/ContaDetail';
+import { MovimentacoesList } from '@/pages/financeiro/movimentacoes/MovimentacoesList';
 
 export const router = createBrowserRouter([
     {
@@ -63,6 +67,23 @@ export const router = createBrowserRouter([
                 path: 'clientes/:id/editar',
                 element: <ClienteForm />,
             },
+            {
+                path: 'financeiro/contas',
+                element: <ContasList />,
+            },
+            {
+                path: 'financeiro/contas/novo',
+                element: <ContaForm />,
+            },
+            {
+                path: 'financeiro/contas/:id',
+                element: <ContaDetail />,
+            },
+            {
+                path: 'financeiro/contas/:id/editar',
+                element: <ContaForm />,
+            },
+
             // TODO: Adicionar outras rotas conforme forem criadas
         ],
     },

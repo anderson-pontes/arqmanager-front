@@ -41,7 +41,7 @@ const menuItems = [
     {
         title: 'Financeiro',
         icon: DollarSign,
-        href: '/financeiro',
+        href: '/financeiro/contas',
     },
     {
         title: 'Calendário',
@@ -66,6 +66,7 @@ const menuItems = [
 ];
 
 export function Sidebar({ className }: SidebarProps) {
+
     return (
         <aside
             className={cn(
@@ -78,7 +79,7 @@ export function Sidebar({ className }: SidebarProps) {
                     {menuItems.map((item) => (
                         <NavLink
                             key={item.href}
-                            to={item.href}
+                            to={item.href!}
                             className={({ isActive }) =>
                                 cn(
                                     'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',

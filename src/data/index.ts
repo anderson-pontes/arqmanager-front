@@ -7,3 +7,6 @@ export * from './mockStatus';
 export * from './mockPropostas';
 export * from './mockProjetos';
 export * from './mockDashboard';
+export * from './mockContasBancarias';
+export * from './mockCategorias';
+export * from './mockMovimentacoes';
