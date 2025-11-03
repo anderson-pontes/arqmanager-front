@@ -330,3 +330,33 @@ export interface ResumoFinanceiro {
         saldo: number;
     }[];
 }
+
+// Tipos de Calendário
+export interface Feriado {
+    id: number;
+    nome: string;
+    data: string;
+    tipo: 'Nacional' | 'Estadual' | 'Municipal' | 'Ponto Facultativo';
+    recorrente: boolean;
+    descricao?: string;
+    cor?: string;
+}
+
+export interface Evento {
+    id: number;
+    titulo: string;
+    descricao?: string;
+    dataInicio: string;
+    dataFim: string;
+    horaInicio?: string;
+    horaFim?: string;
+    tipo: 'Reunião' | 'Prazo' | 'Entrega' | 'Outro';
+    local?: string;
+    participantes?: string[];
+    projeto?: {
+        id: number;
+        numero: string;
+        cliente: string;
+    };
+    cor?: string;
+}
