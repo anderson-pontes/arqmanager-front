@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -20,15 +21,35 @@ import {
     Building2,
     User,
     Shield,
+    KeyRound,
 } from 'lucide-react';
 import { mockColaboradores } from '@/data';
 import { getInitials, formatPhone, formatCPF, formatDate } from '@/utils/formatters';
+import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { toast } from 'sonner';
 
 export function ColaboradorDetail() {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
 
     const colaborador = mockColaboradores.find((c) => c.id === Number(id));
+
+    const handleResetPassword = () => {
+        setResetPasswordDialogOpen(true);
+    };
+
+    const confirmResetPassword = async () => {
+        try {
+            // TODO: Implementar chamada à API para resetar senha
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
+            toast.success('Senha resetada com sucesso! Um email foi enviado para o colaborador.');
+            setResetPasswordDialogOpen(false);
+        } catch (error) {
+            toast.error('Erro ao resetar senha');
+        }
+    };
 
     if (!colaborador) {
         return (
@@ -51,10 +72,16 @@ export function ColaboradorDetail() {
                 title="Detalhes do Colaborador"
                 showBack
                 action={
-                    <Button onClick={() => navigate(`/colaboradores/${id}/editar`)}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Editar
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" onClick={handleResetPassword}>
+                            <KeyRound className="mr-2 h-4 w-4" />
+                            Resetar Senha
+                        </Button>
+                        <Button onClick={() => navigate(`/colaboradores/${id}/editar`)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Editar
+                        </Button>
+                    </div>
                 }
             />
 
@@ -160,17 +187,27 @@ export function ColaboradorDetail() {
                     <CardContent className="space-y-4">
                         <div>
                             <p className="text-sm text-muted-foreground">Sócio</p>
-                            <p className="font-medium">Não</p>
+                            <Badge variant={colaborador.socio === 'sim' ? 'default' : 'secondary'}>
+                                {colaborador.socio === 'sim' ? 'Sim' : 'Não'}
+                            </Badge>
                         </div>
-                        <Separator />
-                        <div>
-                            <p className="text-sm text-muted-foreground">Tipo PIX</p>
-                            <p className="font-medium">Email</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-muted-foreground">Chave PIX</p>
-                            <p className="font-medium">{colaborador.email}</p>
-                        </div>
+                        {colaborador.tipoPix && (
+                            <>
+                                <Separator />
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Tipo PIX</p>
+                                    <p className="font-medium capitalize">
+                                        {colaborador.tipoPix === 'aleatoria' ? 'Chave Aleatória' : colaborador.tipoPix}
+                                    </p>
+                                </div>
+                            </>
+                        )}
+                        {colaborador.chavePix && (
+                            <div>
+                                <p className="text-sm text-muted-foreground">Chave PIX</p>
+                                <p className="font-medium">{colaborador.chavePix}</p>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 
@@ -248,6 +285,16 @@ export function ColaboradorDetail() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Dialog de Confirmação para Resetar Senha */}
+            <ConfirmDialog
+                open={resetPasswordDialogOpen}
+                onOpenChange={setResetPasswordDialogOpen}
+                onConfirm={confirmResetPassword}
+                title="Resetar Senha"
+                description={`Tem certeza que deseja resetar a senha de ${colaborador.nome}? Um email será enviado com as instruções para criar uma nova senha.`}
+                confirmText="Resetar Senha"
+            />
         </div>
     );
 }

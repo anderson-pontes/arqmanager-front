@@ -36,6 +36,9 @@ export interface Colaborador {
     ativo: boolean;
     foto?: string;
     ultimoAcesso?: string;
+    socio?: string;
+    tipoPix?: string;
+    chavePix?: string;
 }
 
 export interface Cliente {

@@ -20,7 +20,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Plus, Search, Mail, Phone, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Mail, Phone, Edit, Trash2, KeyRound } from 'lucide-react';
 import { mockColaboradores } from '@/data';
 import { getInitials, formatPhone } from '@/utils/formatters';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
@@ -31,6 +31,7 @@ export function ColaboradoresList() {
     const [searchTerm, setSearchTerm] = useState('');
     const [colaboradores] = useState(mockColaboradores);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<number | null>(null);
 
     const filteredColaboradores = colaboradores.filter((colab) =>
@@ -48,6 +49,24 @@ export function ColaboradoresList() {
         // TODO: Implementar exclusão real
         toast.success('Colaborador excluído com sucesso!');
         setDeleteDialogOpen(false);
+    };
+
+    const handleResetPassword = (id: number) => {
+        setSelectedId(id);
+        setResetPasswordDialogOpen(true);
+    };
+
+    const confirmResetPassword = async () => {
+        try {
+            // TODO: Implementar chamada à API para resetar senha
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
+            const colaborador = colaboradores.find((c) => c.id === selectedId);
+            toast.success(`Senha de ${colaborador?.nome} resetada com sucesso! Um email foi enviado.`);
+            setResetPasswordDialogOpen(false);
+        } catch (error) {
+            toast.error('Erro ao resetar senha');
+        }
     };
 
     return (
@@ -160,6 +179,7 @@ export function ColaboradoresList() {
                                                         `/colaboradores/${colaborador.id}/editar`
                                                     );
                                                 }}
+                                                title="Editar"
                                             >
                                                 <Edit className="h-4 w-4" />
                                             </Button>
@@ -168,8 +188,20 @@ export function ColaboradoresList() {
                                                 size="icon"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
+                                                    handleResetPassword(colaborador.id);
+                                                }}
+                                                title="Resetar Senha"
+                                            >
+                                                <KeyRound className="h-4 w-4 text-orange-600" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
                                                     handleDelete(colaborador.id);
                                                 }}
+                                                title="Excluir"
                                             >
                                                 <Trash2 className="h-4 w-4 text-destructive" />
                                             </Button>
@@ -190,7 +222,7 @@ export function ColaboradoresList() {
                 </CardContent>
             </Card>
 
-            {/* Dialog de Confirmação */}
+            {/* Dialog de Confirmação - Excluir */}
             <ConfirmDialog
                 open={deleteDialogOpen}
                 onOpenChange={setDeleteDialogOpen}
@@ -199,6 +231,16 @@ export function ColaboradoresList() {
                 description="Tem certeza que deseja excluir este colaborador? Esta ação não pode ser desfeita."
                 confirmText="Excluir"
                 variant="destructive"
+            />
+
+            {/* Dialog de Confirmação - Resetar Senha */}
+            <ConfirmDialog
+                open={resetPasswordDialogOpen}
+                onOpenChange={setResetPasswordDialogOpen}
+                onConfirm={confirmResetPassword}
+                title="Resetar Senha"
+                description={`Tem certeza que deseja resetar a senha de ${colaboradores.find((c) => c.id === selectedId)?.nome}? Um email será enviado com as instruções para criar uma nova senha.`}
+                confirmText="Resetar Senha"
             />
         </div>
     );

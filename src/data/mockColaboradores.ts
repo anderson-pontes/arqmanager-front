@@ -11,6 +11,10 @@ export const mockColaboradores: Colaborador[] = [
         perfil: 'Administrador',
         ativo: true,
         foto: '/avatars/ana.jpg',
+        ultimoAcesso: '2024-11-15',
+        socio: 'sim',
+        tipoPix: 'email',
+        chavePix: 'ana.silva@arquiteturadesign.com.br',
     },
     {
         id: 2,
@@ -22,6 +26,10 @@ export const mockColaboradores: Colaborador[] = [
         perfil: 'Arquiteto',
         ativo: true,
         foto: '/avatars/carlos.jpg',
+        ultimoAcesso: '2024-11-14',
+        socio: 'nao',
+        tipoPix: 'cpf',
+        chavePix: '234.567.890-11',
     },
     {
         id: 3,
@@ -33,5 +41,9 @@ export const mockColaboradores: Colaborador[] = [
         perfil: 'Designer',
         ativo: true,
         foto: '/avatars/beatriz.jpg',
+        ultimoAcesso: '2024-11-13',
+        socio: 'nao',
+        tipoPix: 'telefone',
+        chavePix: '11987654323',
     },
 ];

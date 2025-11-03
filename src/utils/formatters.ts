@@ -1,23 +1,75 @@
 // Formatadores de dados
 
 export const formatCurrency = (value: number): string => {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(value);
+    try {
+        if (typeof Intl !== 'undefined' && Intl.NumberFormat) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+            }).format(value);
+        }
+
+        // Fallback manual
+        return `R$ ${value.toFixed(2).replace('.', ',')}`;
+    } catch (error) {
+        console.error('Error formatting currency:', error);
+        return `R$ ${value.toFixed(2)}`;
+    }
 };
 
 export const formatDate = (date: string | Date): string => {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    return new Intl.DateFormat('pt-BR').format(d);
+    if (!date) return '';
+
+    try {
+        const d = typeof date === 'string' ? new Date(date) : date;
+
+        // Verifica se a data é válida
+        if (isNaN(d.getTime())) return date.toString();
+
+        // Tenta usar Intl.DateFormat
+        if (typeof Intl !== 'undefined' && Intl.DateTimeFormat) {
+            return new Intl.DateTimeFormat('pt-BR').format(d);
+        }
+
+        // Fallback manual
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    } catch (error) {
+        console.error('Error formatting date:', error);
+        return date.toString();
+    }
 };
 
 export const formatDateTime = (date: string | Date): string => {
-    const d = typeof date === 'string' ? new Date(date) : date;
-    return new Intl.DateFormat('pt-BR', {
-        dateStyle: 'short',
-        timeStyle: 'short',
-    }).format(d);
+    if (!date) return '';
+
+    try {
+        const d = typeof date === 'string' ? new Date(date) : date;
+
+        // Verifica se a data é válida
+        if (isNaN(d.getTime())) return date.toString();
+
+        // Tenta usar Intl.DateFormat
+        if (typeof Intl !== 'undefined' && Intl.DateTimeFormat) {
+            return new Intl.DateTimeFormat('pt-BR', {
+                dateStyle: 'short',
+                timeStyle: 'short',
+            }).format(d);
+        }
+
+        // Fallback manual
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}`;
+    } catch (error) {
+        console.error('Error formatting datetime:', error);
+        return date.toString();
+    }
 };
 
 export const formatCPF = (cpf: string): string => {

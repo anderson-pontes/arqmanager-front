@@ -5,6 +5,7 @@ import { Login } from '@/pages/auth/Login';
 import { Dashboard } from '@/pages/dashboard/Dashboard';
 import { ColaboradoresList } from '@/pages/colaboradores/ColaboradoresList';
 import { ColaboradorForm } from '@/pages/colaboradores/ColaboradorForm';
+import { ColaboradorDetail } from '@/pages/colaboradores/ColaboradorDetail';
 import { ClientesList } from '@/pages/clientes/ClientesList';
 import { ClienteForm } from '@/pages/clientes/ClienteForm';
 import { ClienteDetail } from '@/pages/clientes/ClienteDetail';
@@ -37,6 +38,10 @@ export const router = createBrowserRouter([
             {
                 path: 'colaboradores/novo',
                 element: <ColaboradorForm />,
+            },
+            {
+                path: 'colaboradores/:id',
+                element: <ColaboradorDetail />,
             },
             {
                 path: 'colaboradores/:id/editar',
