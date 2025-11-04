@@ -11,3 +11,4 @@ export * from './mockContasBancarias';
 export * from './mockCategorias';
 export * from './mockMovimentacoes';
 export * from './mockFeriados';
+export * from './mockEventos';

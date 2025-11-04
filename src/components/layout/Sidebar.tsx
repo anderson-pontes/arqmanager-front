@@ -44,9 +44,9 @@ const menuItems = [
         href: '/financeiro/contas',
     },
     {
-        title: 'Agenda',
+        title: 'Calendário',
         icon: Calendar,
-        href: '/agenda',
+        href: '/calendario',
     },
     {
         title: 'Colaboradores',

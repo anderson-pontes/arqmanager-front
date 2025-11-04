@@ -78,7 +78,7 @@ export function CalendarioPage() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => navigate(`/agenda/feriados/${feriado.id}/editar`)}
+                            onClick={() => navigate(`/calendario/feriados/${feriado.id}/editar`)}
                         >
                             <Edit className="h-4 w-4" />
                         </Button>
@@ -98,13 +98,20 @@ export function CalendarioPage() {
     return (
         <div>
             <PageHeader
-                title="Feriados"
+                title="Gerenciar Feriados"
                 description="Gerencie os feriados do escritório"
+                showBack
                 action={
-                    <Button onClick={() => navigate('/agenda/feriados/novo')}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Novo Feriado
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" onClick={() => navigate('/calendario')}>
+                            <Calendar className="mr-2 h-4 w-4" />
+                            Ver Calendário
+                        </Button>
+                        <Button onClick={() => navigate('/calendario/feriados/novo')}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Novo Feriado
+                        </Button>
+                    </div>
                 }
             />
 

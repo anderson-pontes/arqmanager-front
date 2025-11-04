@@ -14,6 +14,7 @@ import { ContaForm } from '@/pages/financeiro/contas/ContaForm';
 import { ContaDetail } from '@/pages/financeiro/contas/ContaDetail';
 import { MovimentacoesList } from '@/pages/financeiro/movimentacoes/MovimentacoesList';
 import { AgendaPage } from '@/pages/agenda/AgendaPage';
+import { CalendarioView } from '@/pages/calendario/CalendarioView';
 import { CalendarioPage } from '@/pages/calendario/CalendarioPage';
 import { FeriadoForm } from '@/pages/calendario/FeriadoForm';
 
@@ -87,19 +88,19 @@ export const router = createBrowserRouter([
                 element: <ContaForm />,
             },
             {
-                path: 'agenda',
-                element: <AgendaPage />,
+                path: 'calendario',
+                element: <CalendarioView />,
             },
             {
-                path: 'agenda/feriados',
+                path: 'calendario/feriados',
                 element: <CalendarioPage />,
             },
             {
-                path: 'agenda/feriados/novo',
+                path: 'calendario/feriados/novo',
                 element: <FeriadoForm />,
             },
             {
-                path: 'agenda/feriados/:id/editar',
+                path: 'calendario/feriados/:id/editar',
                 element: <FeriadoForm />,
             },
             // TODO: Adicionar outras rotas conforme forem criadas
