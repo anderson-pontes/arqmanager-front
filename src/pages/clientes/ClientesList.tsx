@@ -4,6 +4,9 @@ import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { useLoading } from '@/hooks/useLoading';
+import { SkeletonStatCard, SkeletonCard } from '@/components/common/SkeletonCard';
+import { SkeletonTable } from '@/components/common/SkeletonTable';
 import {
     Card,
     CardContent,
@@ -35,6 +38,7 @@ export function ClientesList() {
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+    const isLoading = useLoading(800);
 
     const filteredClientes = useMemo(() => {
         return clientes.filter((cliente) =>
@@ -71,6 +75,27 @@ export function ClientesList() {
         toast.success('Cliente excluído com sucesso!');
         setDeleteDialogOpen(false);
     };
+
+    if (isLoading) {
+        return (
+            <div>
+                <PageHeader
+                    title="Clientes"
+                    description="Gerencie os clientes do escritório"
+                />
+                <div className="grid gap-6 md:grid-cols-4 mb-6">
+                    <SkeletonStatCard />
+                    <SkeletonStatCard />
+                    <SkeletonStatCard />
+                    <SkeletonStatCard />
+                </div>
+                <SkeletonCard hasHeader={false} lines={1} className="mb-6" />
+                <SkeletonCard>
+                    <SkeletonTable columns={6} rows={5} />
+                </SkeletonCard>
+            </div>
+        );
+    }
 
     return (
         <div>

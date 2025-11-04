@@ -12,11 +12,17 @@ import { ClienteDetail } from '@/pages/clientes/ClienteDetail';
 import { ContasList } from '@/pages/financeiro/contas/ContasList';
 import { ContaForm } from '@/pages/financeiro/contas/ContaForm';
 import { ContaDetail } from '@/pages/financeiro/contas/ContaDetail';
-import { MovimentacoesList } from '@/pages/financeiro/movimentacoes/MovimentacoesList';
-import { AgendaPage } from '@/pages/agenda/AgendaPage';
 import { CalendarioView } from '@/pages/calendario/CalendarioView';
 import { CalendarioPage } from '@/pages/calendario/CalendarioPage';
 import { FeriadoForm } from '@/pages/calendario/FeriadoForm';
+import { EscritorioPage } from '@/pages/escritorio/EscritorioPage';
+import { ConfiguracoesPage } from '@/pages/configuracoes/ConfiguracoesPage';
+import { ProjetosList } from '@/pages/projetos/ProjetosList';
+import { ProjetoDetail } from '@/pages/projetos/ProjetoDetail';
+import { ProjetoForm } from '@/pages/projetos/ProjetoForm';
+import { PropostasList } from '@/pages/propostas/PropostasList';
+import { PropostaDetail } from '@/pages/propostas/PropostaDetail';
+import { PropostaForm } from '@/pages/propostas/PropostaForm';
 
 export const router = createBrowserRouter([
     {
@@ -103,7 +109,46 @@ export const router = createBrowserRouter([
                 path: 'calendario/feriados/:id/editar',
                 element: <FeriadoForm />,
             },
-            // TODO: Adicionar outras rotas conforme forem criadas
+            {
+                path: 'escritorio',
+                element: <EscritorioPage />,
+            },
+            {
+                path: 'configuracoes',
+                element: <ConfiguracoesPage />,
+            },
+            {
+                path: 'projetos',
+                element: <ProjetosList />,
+            },
+            {
+                path: 'projetos/novo',
+                element: <ProjetoForm />,
+            },
+            {
+                path: 'projetos/:id',
+                element: <ProjetoDetail />,
+            },
+            {
+                path: 'projetos/:id/editar',
+                element: <ProjetoForm />,
+            },
+            {
+                path: 'propostas',
+                element: <PropostasList />,
+            },
+            {
+                path: 'propostas/novo',
+                element: <PropostaForm />,
+            },
+            {
+                path: 'propostas/:id',
+                element: <PropostaDetail />,
+            },
+            {
+                path: 'propostas/:id/editar',
+                element: <PropostaForm />,
+            },
         ],
     },
     {
