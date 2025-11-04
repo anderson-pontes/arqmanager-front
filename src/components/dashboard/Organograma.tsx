@@ -106,12 +106,22 @@ export function Organograma() {
             <g onClick={handleClick} style={{ cursor: isProject ? 'pointer' : 'default' }}>
                 {isRoot && (
                     <>
-                        <circle r={40} fill="#8B5CF6" />
-                        <text fill="white" strokeWidth="0" x="0" y="5" textAnchor="middle" fontSize="14" fontWeight="bold">
-                            {nodeDatum.name.split(' ')[0]}
+                        <rect
+                            x="-100"
+                            y="-35"
+                            width="200"
+                            height="70"
+                            fill="#8B5CF6"
+                            rx="12"
+                        />
+                        <text fill="white" strokeWidth="0" x="0" y="-10" textAnchor="middle" fontSize="12" fontWeight="bold">
+                            Arquitetura & Design
                         </text>
-                        <text fill="white" strokeWidth="0" x="0" y="20" textAnchor="middle" fontSize="10">
-                            {nodeDatum.name.split(' ').slice(1).join(' ')}
+                        <text fill="white" strokeWidth="0" x="0" y="5" textAnchor="middle" fontSize="12" fontWeight="bold">
+                            Ltda
+                        </text>
+                        <text fill="white" strokeWidth="0" x="0" y="22" textAnchor="middle" fontSize="10" opacity="0.9">
+                            Escritório
                         </text>
                     </>
                 )}
@@ -173,17 +183,18 @@ export function Organograma() {
                 </div>
             </CardHeader>
             <CardContent>
-                <div style={{ width: '100%', height: '600px' }}>
+                <div style={{ width: '100%', height: '700px' }}>
                     <Tree
                         data={treeData}
                         orientation="vertical"
                         pathFunc="step"
-                        translate={{ x: 400, y: 50 }}
-                        nodeSize={{ x: 200, y: 150 }}
-                        separation={{ siblings: 1.5, nonSiblings: 2 }}
+                        translate={{ x: 600, y: 80 }}
+                        nodeSize={{ x: 250, y: 180 }}
+                        separation={{ siblings: 1.2, nonSiblings: 1.5 }}
                         renderCustomNodeElement={renderCustomNode}
-                        zoom={0.8}
+                        zoom={0.7}
                         enableLegacyTransitions
+                        scaleExtent={{ min: 0.3, max: 2 }}
                     />
                 </div>
             </CardContent>
