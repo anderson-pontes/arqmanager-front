@@ -78,23 +78,23 @@ export function Organograma() {
         };
     }, []);
 
-    const renderCustomNode = ({ nodeDatum }: any) => {
-        const isRoot = nodeDatum.name === mockEscritorio.nomeFantasia;
-        const isCategory = nodeDatum.attributes?.status && !nodeDatum.attributes?.id;
-        const isProject = nodeDatum.attributes?.id;
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'Em Andamento':
+                return '#3B82F6';
+            case 'Concluído':
+                return '#10B981';
+            case 'Pausado':
+                return '#F59E0B';
+            default:
+                return '#8B5CF6';
+        }
+    };
 
-        const getStatusColor = (status: string) => {
-            switch (status) {
-                case 'Em Andamento':
-                    return '#3B82F6';
-                case 'Concluído':
-                    return '#10B981';
-                case 'Pausado':
-                    return '#F59E0B';
-                default:
-                    return '#8B5CF6';
-            }
-        };
+    const renderCustomNode = ({ nodeDatum }: { nodeDatum: TreeNode }) => {
+        const isRoot = nodeDatum.attributes?.status === 'Escritório';
+        const isCategory = nodeDatum.attributes?.status && !nodeDatum.attributes?.id && !isRoot;
+        const isProject = !!nodeDatum.attributes?.id;
 
         const handleClick = () => {
             if (isProject && nodeDatum.attributes?.id) {
@@ -102,69 +102,123 @@ export function Organograma() {
             }
         };
 
-        return (
-            <g onClick={handleClick} style={{ cursor: isProject ? 'pointer' : 'default' }}>
-                {isRoot && (
-                    <>
-                        <rect
-                            x="-100"
-                            y="-35"
-                            width="200"
-                            height="70"
-                            fill="#8B5CF6"
-                            rx="12"
-                        />
-                        <text fill="white" strokeWidth="0" x="0" y="-10" textAnchor="middle" fontSize="12" fontWeight="bold">
-                            Arquitetura & Design
-                        </text>
-                        <text fill="white" strokeWidth="0" x="0" y="5" textAnchor="middle" fontSize="12" fontWeight="bold">
-                            Ltda
-                        </text>
-                        <text fill="white" strokeWidth="0" x="0" y="22" textAnchor="middle" fontSize="10" opacity="0.9">
-                            Escritório
-                        </text>
-                    </>
-                )}
-                {isCategory && (
-                    <>
-                        <rect
-                            x="-60"
-                            y="-20"
-                            width="120"
-                            height="40"
-                            fill={getStatusColor(nodeDatum.attributes.status)}
-                            rx="8"
-                        />
-                        <text fill="white" strokeWidth="0" x="0" y="5" textAnchor="middle" fontSize="12" fontWeight="bold">
-                            {nodeDatum.name}
-                        </text>
-                    </>
-                )}
-                {isProject && (
-                    <>
-                        <rect
-                            x="-70"
-                            y="-35"
-                            width="140"
-                            height="70"
-                            fill="white"
-                            stroke={getStatusColor(nodeDatum.attributes.status)}
-                            strokeWidth="2"
-                            rx="6"
-                        />
-                        <text fill="#1F2937" strokeWidth="0" x="0" y="-15" textAnchor="middle" fontSize="12" fontWeight="bold">
-                            {nodeDatum.name}
-                        </text>
-                        <text fill="#6B7280" strokeWidth="0" x="0" y="0" textAnchor="middle" fontSize="10">
-                            {nodeDatum.attributes.cliente}
-                        </text>
-                        <text fill="#10B981" strokeWidth="0" x="0" y="15" textAnchor="middle" fontSize="11" fontWeight="600">
-                            {nodeDatum.attributes.valor}
-                        </text>
-                    </>
-                )}
-            </g>
-        );
+        if (isRoot) {
+            return (
+                <g>
+                    <rect
+                        x="-110"
+                        y="-40"
+                        width="220"
+                        height="80"
+                        fill="#8B5CF6"
+                        rx="12"
+                        stroke="#6D28D9"
+                        strokeWidth="3"
+                    />
+                    <text
+                        fill="white"
+                        strokeWidth="0"
+                        x="0"
+                        y="-12"
+                        textAnchor="middle"
+                        fontSize="14"
+                        fontWeight="bold"
+                    >
+                        {nodeDatum.name}
+                    </text>
+                    <text
+                        fill="white"
+                        strokeWidth="0"
+                        x="0"
+                        y="10"
+                        textAnchor="middle"
+                        fontSize="11"
+                        opacity="0.9"
+                    >
+                        Escritório
+                    </text>
+                </g>
+            );
+        }
+
+        if (isCategory && nodeDatum.attributes) {
+            return (
+                <g>
+                    <rect
+                        x="-80"
+                        y="-25"
+                        width="160"
+                        height="50"
+                        fill={getStatusColor(nodeDatum.attributes.status || '')}
+                        rx="8"
+                        stroke="#1F2937"
+                        strokeWidth="2"
+                    />
+                    <text
+                        fill="white"
+                        strokeWidth="0"
+                        x="0"
+                        y="5"
+                        textAnchor="middle"
+                        fontSize="13"
+                        fontWeight="bold"
+                    >
+                        {nodeDatum.name}
+                    </text>
+                </g>
+            );
+        }
+
+        if (isProject && nodeDatum.attributes) {
+            return (
+                <g onClick={handleClick} style={{ cursor: 'pointer' }}>
+                    <rect
+                        x="-75"
+                        y="-40"
+                        width="150"
+                        height="80"
+                        fill="white"
+                        stroke={getStatusColor(nodeDatum.attributes.status || '')}
+                        strokeWidth="3"
+                        rx="8"
+                    />
+                    <text
+                        fill="#1F2937"
+                        strokeWidth="0"
+                        x="0"
+                        y="-18"
+                        textAnchor="middle"
+                        fontSize="13"
+                        fontWeight="bold"
+                    >
+                        {nodeDatum.name}
+                    </text>
+                    <text
+                        fill="#6B7280"
+                        strokeWidth="0"
+                        x="0"
+                        y="0"
+                        textAnchor="middle"
+                        fontSize="11"
+                    >
+                        {nodeDatum.attributes.cliente}
+                    </text>
+                    <text
+                        fill="#10B981"
+                        strokeWidth="0"
+                        x="0"
+                        y="18"
+                        textAnchor="middle"
+                        fontSize="12"
+                        fontWeight="600"
+                    >
+                        {nodeDatum.attributes.valor}
+                    </text>
+                </g>
+            );
+        }
+
+        return <g />;
     };
 
     return (
@@ -188,13 +242,14 @@ export function Organograma() {
                         data={treeData}
                         orientation="vertical"
                         pathFunc="step"
-                        translate={{ x: 600, y: 80 }}
-                        nodeSize={{ x: 250, y: 180 }}
-                        separation={{ siblings: 1.2, nonSiblings: 1.5 }}
+                        translate={{ x: 600, y: 100 }}
+                        nodeSize={{ x: 250, y: 200 }}
+                        separation={{ siblings: 1.5, nonSiblings: 2 }}
                         renderCustomNodeElement={renderCustomNode}
                         zoom={0.7}
-                        enableLegacyTransitions
-                        scaleExtent={{ min: 0.3, max: 2 }}
+                        scaleExtent={{ min: 0.2, max: 2 }}
+                        pathClassFunc={() => 'link-custom'}
+                        depthFactor={200}
                     />
                 </div>
             </CardContent>
