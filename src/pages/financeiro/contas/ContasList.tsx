@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useLoading } from '@/hooks/useLoading';
+import { SkeletonStatCard, SkeletonCard } from '@/components/common/SkeletonCard';
 import {
     Card,
     CardContent,
@@ -21,6 +23,7 @@ export function ContasList() {
     const [contas] = useState(mockContasBancarias);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<number | null>(null);
+    const isLoading = useLoading(800);
 
     const saldoTotal = contas.reduce((acc, conta) => acc + conta.saldoAtual, 0);
 
@@ -33,6 +36,23 @@ export function ContasList() {
         toast.success('Conta excluída com sucesso!');
         setDeleteDialogOpen(false);
     };
+
+    if (isLoading) {
+        return (
+            <div>
+                <PageHeader title="Contas Bancárias" description="Gerencie as contas bancárias do escritório" />
+                <div className="grid gap-6 md:grid-cols-3 mb-6">
+                    <SkeletonStatCard />
+                    <SkeletonStatCard />
+                    <SkeletonStatCard />
+                </div>
+                <div className="grid gap-6 md:grid-cols-2">
+                    <SkeletonCard lines={5} />
+                    <SkeletonCard lines={5} />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div>

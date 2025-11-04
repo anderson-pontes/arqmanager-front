@@ -4,6 +4,9 @@ import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { useLoading } from '@/hooks/useLoading';
+import { SkeletonStatCard, SkeletonCard } from '@/components/common/SkeletonCard';
+import { SkeletonTable } from '@/components/common/SkeletonTable';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -22,6 +25,7 @@ export function ProjetosList() {
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+    const isLoading = useLoading(800);
 
     const filteredProjetos = useMemo(() => {
         return projetos.filter(
@@ -79,6 +83,24 @@ export function ProjetosList() {
                 return <AlertCircle className="h-4 w-4" />;
         }
     };
+
+    if (isLoading) {
+        return (
+            <div>
+                <PageHeader title="Projetos" description="Gerencie os projetos do escritório" />
+                <div className="grid gap-6 md:grid-cols-4 mb-6">
+                    <SkeletonStatCard />
+                    <SkeletonStatCard />
+                    <SkeletonStatCard />
+                    <SkeletonStatCard />
+                </div>
+                <SkeletonCard hasHeader={false} lines={1} className="mb-6" />
+                <SkeletonCard>
+                    <SkeletonTable columns={7} rows={5} />
+                </SkeletonCard>
+            </div>
+        );
+    }
 
     return (
         <div>

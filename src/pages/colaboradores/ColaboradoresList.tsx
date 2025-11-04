@@ -4,6 +4,9 @@ import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { useLoading } from '@/hooks/useLoading';
+import { SkeletonCard } from '@/components/common/SkeletonCard';
+import { SkeletonTable } from '@/components/common/SkeletonTable';
 import {
     Card,
     CardContent,
@@ -36,6 +39,7 @@ export function ColaboradoresList() {
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+    const isLoading = useLoading(800);
 
     const filteredColaboradores = useMemo(() => {
         return colaboradores.filter((colab) =>
@@ -90,6 +94,18 @@ export function ColaboradoresList() {
             toast.error('Erro ao resetar senha');
         }
     };
+
+    if (isLoading) {
+        return (
+            <div>
+                <PageHeader title="Colaboradores" description="Gerencie os colaboradores do escritório" />
+                <SkeletonCard hasHeader={false} lines={1} className="mb-6" />
+                <SkeletonCard>
+                    <SkeletonTable columns={5} rows={5} />
+                </SkeletonCard>
+            </div>
+        );
+    }
 
     return (
         <div>
