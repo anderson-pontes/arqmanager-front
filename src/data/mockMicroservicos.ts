@@ -1,0 +1,50 @@
+import type { ProjetoMicroservico } from '@/types';
+
+export const mockMicroservicos: ProjetoMicroservico[] = [
+    {
+        id: 1,
+        projetoId: 1,
+        descricao: 'Projeto Arquitetônico',
+        metragem: 150.5,
+        valor: 25000,
+        dataInicio: '2024-01-15',
+        dataFim: '2024-02-15',
+        status: 'Concluído',
+        observacao: 'Projeto aprovado pelo cliente',
+    },
+    {
+        id: 2,
+        projetoId: 1,
+        descricao: 'Projeto Estrutural',
+        metragem: 150.5,
+        valor: 15000,
+        dataInicio: '2024-02-20',
+        status: 'Em Andamento',
+        observacao: 'Aguardando aprovação da prefeitura',
+    },
+    {
+        id: 3,
+        projetoId: 1,
+        descricao: 'Projeto Hidrossanitário',
+        metragem: 150.5,
+        valor: 8000,
+        status: 'Pendente',
+    },
+    {
+        id: 4,
+        projetoId: 2,
+        descricao: 'Projeto de Interiores',
+        metragem: 80.0,
+        valor: 12000,
+        dataInicio: '2024-03-01',
+        status: 'Em Andamento',
+    },
+    {
+        id: 5,
+        projetoId: 2,
+        descricao: 'Projeto de Iluminação',
+        metragem: 80.0,
+        valor: 5000,
+        status: 'Pendente',
+    },
+];

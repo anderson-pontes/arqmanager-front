@@ -12,3 +12,8 @@ export * from './mockCategorias';
 export * from './mockMovimentacoes';
 export * from './mockFeriados';
 export * from './mockEventos';
+export * from './mockReunioes';
+export * from './mockMicroservicos';
+export * from './mockTimeline';
+export * from './mockRRT';
+export * from './mockTermosEntrega';

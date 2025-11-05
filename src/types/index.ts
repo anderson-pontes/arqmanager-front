@@ -162,10 +162,83 @@ export interface ProjetoDocumento {
 
 export interface Reuniao {
     id: number;
+    projeto: {
+        id: number;
+        numero: string;
+        cliente: string;
+    };
     data: string;
     dataCliente?: string;
     deAcordo: boolean;
     observacao: string;
+    participantes: string[];
+    local?: string;
+    status: 'Pendente' | 'Confirmada' | 'Cancelada';
+    manifestacoes: ReuniaoManifestacao[];
+    ata?: string;
+}
+
+export interface ReuniaoManifestacao {
+    id: number;
+    reuniaoId: number;
+    autor: string;
+    data: string;
+    tipo: 'Cliente' | 'Escritório';
+    mensagem: string;
+    anexos?: string[];
+}
+
+export interface ProjetoMicroservico {
+    id: number;
+    projetoId: number;
+    descricao: string;
+    metragem?: number;
+    valor: number;
+    dataInicio?: string;
+    dataFim?: string;
+    status: 'Pendente' | 'Em Andamento' | 'Concluído' | 'Cancelado';
+    observacao?: string;
+}
+
+export interface ProjetoTimeline {
+    id: number;
+    projetoId: number;
+    tipo: 'Etapa' | 'Reunião' | 'Documento' | 'Pagamento' | 'Observação';
+    titulo: string;
+    descricao: string;
+    data: string;
+    responsavel?: string;
+    status?: string;
+    icone?: string;
+    cor?: string;
+}
+
+export interface RRT {
+    id: number;
+    projetoId: number;
+    numero: string;
+    dataEmissao: string;
+    dataValidade?: string;
+    valor: number;
+    responsavelTecnico: string;
+    registro: string;
+    tipo: string;
+    observacao?: string;
+    arquivo?: string;
+    status: 'Pendente' | 'Emitida' | 'Vencida';
+}
+
+export interface TermoEntrega {
+    id: number;
+    projetoId: number;
+    dataEntrega: string;
+    responsavelEntrega: string;
+    responsavelRecebimento: string;
+    itensEntregues: string[];
+    observacao?: string;
+    assinaturaEscritorio?: string;
+    assinaturaCliente?: string;
+    status: 'Pendente' | 'Assinado' | 'Cancelado';
 }
 
 export interface DashboardEstatisticas {

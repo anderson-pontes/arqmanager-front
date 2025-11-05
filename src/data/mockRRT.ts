@@ -1,0 +1,42 @@
+import type { RRT } from '@/types';
+
+export const mockRRTs: RRT[] = [
+    {
+        id: 1,
+        projetoId: 1,
+        numero: 'RRT-2024-001',
+        dataEmissao: '2024-01-20',
+        dataValidade: '2025-01-20',
+        valor: 350.0,
+        responsavelTecnico: 'Ana Silva',
+        registro: 'CAU A12345-6',
+        tipo: 'Projeto Arquitetônico',
+        observacao: 'RRT para projeto residencial unifamiliar',
+        arquivo: '/documentos/rrt-2024-001.pdf',
+        status: 'Emitida',
+    },
+    {
+        id: 2,
+        projetoId: 1,
+        numero: 'RRT-2024-002',
+        dataEmissao: '2024-02-25',
+        dataValidade: '2025-02-25',
+        valor: 250.0,
+        responsavelTecnico: 'Carlos Oliveira',
+        registro: 'CREA 123456-7',
+        tipo: 'Projeto Estrutural',
+        observacao: 'RRT para projeto estrutural',
+        status: 'Emitida',
+    },
+    {
+        id: 3,
+        projetoId: 2,
+        numero: 'RRT-2024-003',
+        dataEmissao: '2024-03-01',
+        valor: 300.0,
+        responsavelTecnico: 'Ana Silva',
+        registro: 'CAU A12345-6',
+        tipo: 'Projeto de Interiores',
+        status: 'Pendente',
+    },
+];
