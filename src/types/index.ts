@@ -366,11 +366,22 @@ export interface ContaBancaria {
     banco: string;
     agencia: string;
     conta: string;
-    tipo: 'Corrente' | 'Poupança' | 'Investimento' | 'Caixa';
+    tipo:
+        | 'Corrente'
+        | 'Poupança'
+        | 'Investimento'
+        | 'Caixa'
+        | 'Salário'
+        | 'Outros';
     saldoInicial: number;
     saldoAtual: number;
     ativo: boolean;
     cor?: string;
+    responsavel?: string;
+    dataInicio?: string;
+    dataEncerramento?: string;
+    tipoPix?: string;
+    chavePix?: string;
 }
 
 export interface CategoriaFinanceira {
