@@ -154,7 +154,7 @@ export function ColaboradorForm() {
                                     }
                                     defaultValue={colaborador?.tipo}
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Selecione o tipo" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -278,7 +278,7 @@ export function ColaboradorForm() {
                                         onValueChange={(value) => setValue('socio', value)}
                                         defaultValue={colaborador ? 'nao' : undefined}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Selecione" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -301,7 +301,7 @@ export function ColaboradorForm() {
                                         onValueChange={(value) => setValue('tipoPix', value)}
                                         defaultValue={colaborador?.tipoPix}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Selecione" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -358,7 +358,7 @@ export function ColaboradorForm() {
                                         onValueChange={(value) => setValue('perfil', value)}
                                         defaultValue={colaborador?.perfil}
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Selecione o perfil" />
                                         </SelectTrigger>
                                         <SelectContent>
