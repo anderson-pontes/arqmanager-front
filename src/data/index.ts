@@ -17,3 +17,4 @@ export * from './mockMicroservicos';
 export * from './mockTimeline';
 export * from './mockRRT';
 export * from './mockTermosEntrega';
+export * from './mockRelatorios';
