@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge';
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
@@ -47,6 +46,7 @@ export function ColaboradorDetail() {
             toast.success('Senha resetada com sucesso! Um email foi enviado para o colaborador.');
             setResetPasswordDialogOpen(false);
         } catch (error) {
+            console.error('Erro ao resetar senha:', error);
             toast.error('Erro ao resetar senha');
         }
     };
@@ -111,9 +111,22 @@ export function ColaboradorDetail() {
                                     <h2 className="text-2xl font-bold">
                                         {colaborador.nome}
                                     </h2>
-                                    <Badge variant="outline" className="mt-2">
-                                        {colaborador.perfil}
-                                    </Badge>
+                                    <div className="flex gap-2 mt-2">
+                                        <Badge variant="outline">
+                                            {colaborador.perfil}
+                                        </Badge>
+                                        {colaborador.tipo && (
+                                            <Badge
+                                                className={
+                                                    colaborador.tipo === 'Geral'
+                                                        ? 'bg-blue-500'
+                                                        : 'bg-orange-500'
+                                                }
+                                            >
+                                                {colaborador.tipo}
+                                            </Badge>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <Separator />
@@ -220,6 +233,23 @@ export function ColaboradorDetail() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
+                        {colaborador.tipo && (
+                            <>
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Tipo</p>
+                                    <Badge
+                                        className={
+                                            colaborador.tipo === 'Geral'
+                                                ? 'bg-blue-500 mt-1'
+                                                : 'bg-orange-500 mt-1'
+                                        }
+                                    >
+                                        {colaborador.tipo}
+                                    </Badge>
+                                </div>
+                                <Separator />
+                            </>
+                        )}
                         <div>
                             <p className="text-sm text-muted-foreground">Perfil de Acesso</p>
                             <Badge variant="outline" className="mt-1">
