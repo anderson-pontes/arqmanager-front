@@ -24,20 +24,24 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { mockColaboradores } from '@/data';
 import { Save, X } from 'lucide-react';
+import { maskCPF, maskPhone } from '@/utils/masks';
 
 const colaboradorSchema = z.object({
     nome: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
     email: z.string().email('Email inválido'),
-    cpf: z.string().min(11, 'CPF inválido'),
-    telefone: z.string().min(10, 'Telefone inválido'),
+    cpf: z.string().min(14, 'CPF inválido').max(14, 'CPF inválido'),
+    telefone: z.string().min(14, 'Telefone inválido'),
     dataNascimento: z.string().min(1, 'Data de nascimento é obrigatória'),
     perfil: z.string().min(1, 'Perfil é obrigatório'),
+    tipo: z.enum(['Geral', 'Terceirizado']).refine((val) => val !== undefined, {
+        message: 'Tipo é obrigatório',
+    }),
     ativo: z.boolean(),
     senha: z.string().optional(),
     // Dados Bancários
     socio: z.string().min(1, 'Selecione se é sócio'),
-    tipoPix: z.string().optional(),
-    chavePix: z.string().optional(),
+    tipoPix: z.string().min(1, 'Tipo de chave PIX é obrigatório'),
+    chavePix: z.string().min(1, 'Chave PIX é obrigatória'),
 });
 
 type ColaboradorForm = z.infer<typeof colaboradorSchema>;
@@ -68,7 +72,11 @@ export function ColaboradorForm() {
                 telefone: colaborador.telefone,
                 dataNascimento: colaborador.dataNascimento,
                 perfil: colaborador.perfil,
+                tipo: colaborador.tipo || 'Geral',
                 ativo: colaborador.ativo,
+                socio: colaborador.socio || 'nao',
+                tipoPix: colaborador.tipoPix || '',
+                chavePix: colaborador.chavePix || '',
             }
             : {
                 ativo: true,
@@ -91,8 +99,9 @@ export function ColaboradorForm() {
             );
 
             navigate('/colaboradores');
-        } catch (error) {
+        } catch (err) {
             toast.error('Erro ao salvar colaborador');
+            console.error(err);
         }
     };
 
@@ -136,13 +145,45 @@ export function ColaboradorForm() {
                             </div>
 
                             <div className="space-y-2">
+                                <Label htmlFor="tipo">
+                                    Tipo <span className="text-destructive">*</span>
+                                </Label>
+                                <Select
+                                    onValueChange={(value) =>
+                                        setValue('tipo', value as 'Geral' | 'Terceirizado')
+                                    }
+                                    defaultValue={colaborador?.tipo}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Selecione o tipo" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Geral">Geral</SelectItem>
+                                        <SelectItem value="Terceirizado">
+                                            Terceirizado
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {errors.tipo && (
+                                    <p className="text-sm text-destructive">
+                                        {errors.tipo.message}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
                                 <Label htmlFor="cpf">
                                     CPF <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="cpf"
                                     placeholder="000.000.000-00"
+                                    maxLength={14}
                                     {...register('cpf')}
+                                    onChange={(e) => {
+                                        const masked = maskCPF(e.target.value);
+                                        setValue('cpf', masked);
+                                    }}
                                 />
                                 {errors.cpf && (
                                     <p className="text-sm text-destructive">
@@ -203,7 +244,12 @@ export function ColaboradorForm() {
                                 <Input
                                     id="telefone"
                                     placeholder="(00) 00000-0000"
+                                    maxLength={15}
                                     {...register('telefone')}
+                                    onChange={(e) => {
+                                        const masked = maskPhone(e.target.value);
+                                        setValue('telefone', masked);
+                                    }}
                                 />
                                 {errors.telefone && (
                                     <p className="text-sm text-destructive">
@@ -248,9 +294,12 @@ export function ColaboradorForm() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="tipoPix">Tipo Pix</Label>
+                                    <Label htmlFor="tipoPix">
+                                        Tipo Pix <span className="text-destructive">*</span>
+                                    </Label>
                                     <Select
                                         onValueChange={(value) => setValue('tipoPix', value)}
+                                        defaultValue={colaborador?.tipoPix}
                                     >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Selecione" />
@@ -265,15 +314,27 @@ export function ColaboradorForm() {
                                             </SelectItem>
                                         </SelectContent>
                                     </Select>
+                                    {errors.tipoPix && (
+                                        <p className="text-sm text-destructive">
+                                            {errors.tipoPix.message}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="chavePix">Chave</Label>
+                                    <Label htmlFor="chavePix">
+                                        Chave PIX <span className="text-destructive">*</span>
+                                    </Label>
                                     <Input
                                         id="chavePix"
                                         placeholder="Chave PIX"
                                         {...register('chavePix')}
                                     />
+                                    {errors.chavePix && (
+                                        <p className="text-sm text-destructive">
+                                            {errors.chavePix.message}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </CardContent>
@@ -305,16 +366,10 @@ export function ColaboradorForm() {
                                                 Administrador
                                             </SelectItem>
                                             <SelectItem value="Arquiteto">
-                                                Arquiteto
+                                                Coordenador de Projetos
                                             </SelectItem>
                                             <SelectItem value="Designer">
-                                                Designer
-                                            </SelectItem>
-                                            <SelectItem value="Estagiário">
-                                                Estagiário
-                                            </SelectItem>
-                                            <SelectItem value="Financeiro">
-                                                Financeiro
+                                                Produção
                                             </SelectItem>
                                         </SelectContent>
                                     </Select>

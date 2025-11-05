@@ -33,6 +33,7 @@ export interface Colaborador {
     telefone: string;
     dataNascimento: string;
     perfil: string;
+    tipo?: 'Geral' | 'Terceirizado';
     ativo: boolean;
     foto?: string;
     ultimoAcesso?: string;
