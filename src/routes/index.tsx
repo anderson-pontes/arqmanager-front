@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { PrivateRoute } from './PrivateRoute';
 import { Login } from '@/pages/auth/Login';
+import { SelecionarEscritorio } from '@/pages/auth/SelecionarEscritorio';
 import { Dashboard } from '@/pages/dashboard/Dashboard';
 import { ColaboradoresList } from '@/pages/colaboradores/ColaboradoresList';
 import { ColaboradorForm } from '@/pages/colaboradores/ColaboradorForm';
@@ -28,6 +29,14 @@ export const router = createBrowserRouter([
     {
         path: '/login',
         element: <Login />,
+    },
+    {
+        path: '/selecionar-escritorio',
+        element: (
+            <PrivateRoute>
+                <SelecionarEscritorio />
+            </PrivateRoute>
+        ),
     },
     {
         path: '/',

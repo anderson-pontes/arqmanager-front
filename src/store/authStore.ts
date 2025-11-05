@@ -1,14 +1,22 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { type User } from '@/types';
+import { type User, type UserEscritorio } from '@/types';
 
 interface AuthState {
     user: User | null;
     accessToken: string | null;
     refreshToken: string | null;
     isAuthenticated: boolean;
-    setAuth: (user: User, accessToken: string, refreshToken: string) => void;
+    requiresEscritorioSelection: boolean;
+    setAuth: (
+        user: User,
+        accessToken: string,
+        refreshToken: string,
+        requiresSelection?: boolean
+    ) => void;
+    setEscritorioAtual: (escritorio: UserEscritorio) => void;
     clearAuth: () => void;
+    logout: () => void;
     updateUser: (user: Partial<User>) => void;
 }
 
@@ -19,15 +27,44 @@ export const useAuthStore = create<AuthState>()(
             accessToken: null,
             refreshToken: null,
             isAuthenticated: false,
+            requiresEscritorioSelection: false,
 
-            setAuth: (user, accessToken, refreshToken) => {
+            setAuth: (
+                user,
+                accessToken,
+                refreshToken,
+                requiresSelection = false
+            ) => {
                 localStorage.setItem('accessToken', accessToken);
                 localStorage.setItem('refreshToken', refreshToken);
+
+                // Se o usuário tem múltiplos escritórios e não tem um selecionado
+                const needsSelection =
+                    requiresSelection ||
+                    (user.escritorios.length > 1 && !user.escritorioId);
+
                 set({
                     user,
                     accessToken,
                     refreshToken,
                     isAuthenticated: true,
+                    requiresEscritorioSelection: needsSelection,
+                });
+            },
+
+            setEscritorioAtual: (escritorio: UserEscritorio) => {
+                set((state) => {
+                    if (!state.user) return state;
+
+                    return {
+                        user: {
+                            ...state.user,
+                            escritorioId: escritorio.escritorio.id,
+                            escritorioAtual: escritorio.escritorio,
+                            perfil: escritorio.perfil, // Atualiza o perfil para o do escritório
+                        },
+                        requiresEscritorioSelection: false,
+                    };
                 });
             },
 
@@ -39,6 +76,19 @@ export const useAuthStore = create<AuthState>()(
                     accessToken: null,
                     refreshToken: null,
                     isAuthenticated: false,
+                    requiresEscritorioSelection: false,
+                });
+            },
+
+            logout: () => {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                set({
+                    user: null,
+                    accessToken: null,
+                    refreshToken: null,
+                    isAuthenticated: false,
+                    requiresEscritorioSelection: false,
                 });
             },
 
@@ -52,6 +102,7 @@ export const useAuthStore = create<AuthState>()(
             partialize: (state) => ({
                 user: state.user,
                 isAuthenticated: state.isAuthenticated,
+                requiresEscritorioSelection: state.requiresEscritorioSelection,
             }),
         }
     )

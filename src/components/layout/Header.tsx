@@ -13,6 +13,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getInitials } from '@/utils/formatters';
+import { EscritorioSwitcher } from './EscritorioSwitcher';
 
 interface HeaderProps {
     onMenuClick?: () => void;
@@ -64,6 +65,9 @@ export function Header({ onMenuClick }: HeaderProps) {
 
                 {/* Right Actions - Alinhado à direita */}
                 <div className="flex items-center gap-2 shrink-0">
+                    {/* Escritório Switcher */}
+                    <EscritorioSwitcher />
+
                     {/* Notifications */}
                     <Button variant="ghost" size="icon" className="relative">
                         <Bell className="h-5 w-5" />

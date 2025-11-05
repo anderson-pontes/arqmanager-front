@@ -1,5 +1,7 @@
 // Exportação centralizada de todos os dados mock
 export * from './mockEscritorio';
+export * from './mockEscritorios';
+export * from './mockUsuarios';
 export * from './mockColaboradores';
 export * from './mockClientes';
 export * from './mockServicos';

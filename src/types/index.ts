@@ -337,14 +337,25 @@ export interface User {
     nome: string;
     email: string;
     perfil: string;
-    escritorioId: number;
+    escritorioId?: number; // Opcional até selecionar o escritório
+    escritorioAtual?: Escritorio; // Escritório selecionado
+    escritorios: UserEscritorio[]; // Lista de escritórios do usuário
     foto?: string;
+}
+
+export interface UserEscritorio {
+    id: number;
+    escritorio: Escritorio;
+    perfil: string; // Perfil específico neste escritório
+    ativo: boolean;
+    dataVinculo: string;
 }
 
 export interface AuthResponse {
     user: User;
     accessToken: string;
     refreshToken: string;
+    requiresEscritorioSelection: boolean; // Se precisa selecionar escritório
 }
 
 // Tipos Financeiros

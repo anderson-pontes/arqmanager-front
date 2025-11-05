@@ -40,23 +40,48 @@ export function Login() {
         console.log('🔐 Login iniciado com:', data);
         setLoading(true);
         try {
-            // TODO: Substituir por chamada real à API
             // Simulando login com dados mock
             await new Promise((resolve) => setTimeout(resolve, 1000));
 
-            const mockUser = {
-                id: 1,
-                nome: 'Ana Silva',
-                email: data.email,
-                perfil: 'Administrador',
-                escritorioId: 1,
+            // Busca usuário por email
+            const { findUserByEmail } = await import('@/data');
+            const user = findUserByEmail(data.email);
+
+            if (!user) {
+                toast.error('Usuário não encontrado');
+                setLoading(false);
+                return;
+            }
+
+            console.log('✅ Usuário encontrado:', user);
+
+            const mockTokens = {
+                accessToken: 'mock-access-token',
+                refreshToken: 'mock-refresh-token',
             };
 
-            console.log('✅ Autenticando usuário:', mockUser);
-            setAuth(mockUser, 'mock-access-token', 'mock-refresh-token');
+            // Verifica se o usuário tem múltiplos escritórios
+            const requiresSelection = user.escritorios.length > 1;
+
+            // Salva no store
+            setAuth(user, mockTokens.accessToken, mockTokens.refreshToken, requiresSelection);
+
             toast.success('Login realizado com sucesso!');
-            console.log('🚀 Redirecionando para dashboard...');
-            navigate('/dashboard');
+
+            // Se tem múltiplos escritórios, redireciona para seleção
+            if (requiresSelection) {
+                console.log('🏢 Usuário tem múltiplos escritórios, redirecionando para seleção...');
+                navigate('/selecionar-escritorio');
+            } else if (user.escritorios.length === 1) {
+                // Se tem apenas um escritório, seleciona automaticamente
+                console.log('🏢 Selecionando escritório único automaticamente...');
+                const { setEscritorioAtual } = useAuthStore.getState();
+                setEscritorioAtual(user.escritorios[0]);
+                console.log('🚀 Redirecionando para dashboard...');
+                navigate('/dashboard');
+            } else {
+                toast.error('Usuário sem escritórios vinculados');
+            }
         } catch (error) {
             console.error('❌ Erro no login:', error);
             toast.error('Erro ao fazer login. Verifique suas credenciais.');

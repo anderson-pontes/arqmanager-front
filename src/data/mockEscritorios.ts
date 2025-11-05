@@ -1,0 +1,47 @@
+import type { Escritorio } from '@/types';
+
+export const mockEscritorios: Escritorio[] = [
+    {
+        id: 1,
+        nomeFantasia: 'Arquitetura & Design Ltda',
+        razaoSocial: 'Arquitetura e Design Projetos Ltda',
+        documento: '12.345.678/0001-90',
+        email: 'contato@arquiteturadesign.com.br',
+        telefone: '(11) 3456-7890',
+        endereco: 'Av. Paulista, 1000 - São Paulo/SP',
+        cor: '#8B5CF6',
+        diasUteis: true,
+        prazoArquivaProposta: 30,
+        observacaoPropostaPadrao:
+            'Prazo em #CORRIDOS_UTEIS# a partir da aprovação do projeto.',
+        observacaoContratoPadrao: 'Pagamento conforme cronograma estabelecido.',
+    },
+    {
+        id: 2,
+        nomeFantasia: 'Studio Arquitetura',
+        razaoSocial: 'Studio Arquitetura e Urbanismo Ltda',
+        documento: '98.765.432/0001-10',
+        email: 'contato@studioarquitetura.com.br',
+        telefone: '(11) 2345-6789',
+        endereco: 'Rua Augusta, 500 - São Paulo/SP',
+        cor: '#3B82F6',
+        diasUteis: true,
+        prazoArquivaProposta: 45,
+        observacaoPropostaPadrao: 'Prazo em dias úteis a partir da aprovação.',
+        observacaoContratoPadrao: 'Pagamento conforme contrato.',
+    },
+    {
+        id: 3,
+        nomeFantasia: 'Espaço Criativo',
+        razaoSocial: 'Espaço Criativo Arquitetura e Interiores Ltda',
+        documento: '11.222.333/0001-44',
+        email: 'contato@espacocriativo.com.br',
+        telefone: '(21) 3456-7890',
+        endereco: 'Av. Atlântica, 2000 - Rio de Janeiro/RJ',
+        cor: '#10B981',
+        diasUteis: false,
+        prazoArquivaProposta: 30,
+        observacaoPropostaPadrao: 'Prazo em dias corridos.',
+        observacaoContratoPadrao: 'Pagamento via PIX ou transferência.',
+    },
+];
