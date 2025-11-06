@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
+import { Footer } from './Footer';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 
 export function Layout() {
@@ -48,11 +49,16 @@ export function Layout() {
                 </Sheet>
 
                 {/* Main Content */}
-                <main className="md:pl-64">
+                <main className="md:pl-64 min-h-[calc(100vh-3.5rem-4rem)]">
                     <div className="container mx-auto px-4 py-3">
                         <Outlet />
                     </div>
                 </main>
+
+                {/* Footer */}
+                <div className="md:pl-64">
+                    <Footer />
+                </div>
             </div>
         </div>
     );

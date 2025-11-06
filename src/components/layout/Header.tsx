@@ -43,13 +43,13 @@ export function Header({ onMenuClick }: HeaderProps) {
                 </Button>
 
                 {/* Logo */}
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center shrink-0">
                     <img
                         src={logoSemNome}
                         alt="ARQManager"
                         className="h-16 w-16 object-contain"
                     />
-                    <span className="hidden font-semibold sm:inline-block">
+                    <span className="hidden font-semibold sm:inline-block bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                         ARQManager
                     </span>
                 </div>

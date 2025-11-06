@@ -178,6 +178,15 @@ export function Login() {
                     </form>
                 </CardContent>
             </Card>
+
+            {/* Footer */}
+            <div className="absolute bottom-0 left-0 right-0 z-10">
+                <div className="container mx-auto py-4">
+                    <p className="text-center text-sm text-muted-foreground">
+                        © {new Date().getFullYear()} ARQManager. Todos os direitos reservados.
+                    </p>
+                </div>
+            </div>
         </div>
     );
 }
