@@ -13,6 +13,9 @@ import { ClienteDetail } from '@/pages/clientes/ClienteDetail';
 import { ContasList } from '@/pages/financeiro/contas/ContasList';
 import { ContaForm } from '@/pages/financeiro/contas/ContaForm';
 import { ContaDetail } from '@/pages/financeiro/contas/ContaDetail';
+import { MovimentacoesList } from '@/pages/financeiro/movimentacoes/MovimentacoesList';
+import { ReceitaForm } from '@/pages/financeiro/receitas/ReceitaForm';
+import { DespesaForm } from '@/pages/financeiro/despesas/DespesaForm';
 import { CalendarioView } from '@/pages/calendario/CalendarioView';
 import { CalendarioPage } from '@/pages/calendario/CalendarioPage';
 import { FeriadoForm } from '@/pages/calendario/FeriadoForm';
@@ -101,6 +104,18 @@ export const router = createBrowserRouter([
             {
                 path: 'financeiro/contas/:id/editar',
                 element: <ContaForm />,
+            },
+            {
+                path: 'financeiro/movimentacoes',
+                element: <MovimentacoesList />,
+            },
+            {
+                path: 'financeiro/receitas/novo',
+                element: <ReceitaForm />,
+            },
+            {
+                path: 'financeiro/despesas/novo',
+                element: <DespesaForm />,
             },
             {
                 path: 'calendario',

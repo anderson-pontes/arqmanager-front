@@ -70,7 +70,7 @@ export function Sidebar({ className }: SidebarProps) {
     return (
         <aside
             className={cn(
-                'fixed left-0 top-14 z-40 h-[calc(100vh-3.5rem)] w-64 border-r border-purple-200 bg-linear-to-b from-purple-50 to-white backdrop-blur-md shadow-lg',
+                'fixed left-0 top-14 z-40 h-[calc(100vh-3.5rem)] w-64 border-r border-border bg-background backdrop-blur-md shadow-lg',
                 className
             )}
         >

@@ -60,10 +60,16 @@ export function ContasList() {
                 title="Contas Bancárias"
                 description="Gerencie as contas bancárias do escritório"
                 action={
-                    <Button onClick={() => navigate('/financeiro/contas/novo')}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nova Conta
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" onClick={() => navigate('/financeiro/movimentacoes')}>
+                            <TrendingUp className="mr-2 h-4 w-4" />
+                            Movimentações
+                        </Button>
+                        <Button onClick={() => navigate('/financeiro/contas/novo')}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Nova Conta
+                        </Button>
+                    </div>
                 }
             />
 

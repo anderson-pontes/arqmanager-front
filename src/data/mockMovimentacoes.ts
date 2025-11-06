@@ -6,6 +6,7 @@ export const mockMovimentacoes: Movimentacao[] = [
     {
         id: 1,
         tipo: 'Receita',
+        tipoReceita: 'Confirmação de Projeto',
         descricao: 'Pagamento Projeto Residencial - Cliente Maria Santos',
         valor: 15000,
         data: '2024-11-01',
@@ -50,6 +51,7 @@ export const mockMovimentacoes: Movimentacao[] = [
     {
         id: 4,
         tipo: 'Receita',
+        tipoReceita: 'Nova Receita',
         descricao: 'Consultoria Arquitetônica - Construtora ABC',
         valor: 3500,
         data: '2024-11-15',
@@ -100,6 +102,7 @@ export const mockMovimentacoes: Movimentacao[] = [
     {
         id: 8,
         tipo: 'Receita',
+        tipoReceita: 'Novo Projeto',
         descricao: 'Projeto Comercial - Imobiliária XYZ',
         valor: 25000,
         data: '2024-11-22',

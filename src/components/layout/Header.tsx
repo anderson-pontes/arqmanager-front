@@ -29,7 +29,7 @@ export function Header({ onMenuClick }: HeaderProps) {
     };
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-purple-200 bg-linear-to-r from-purple-50 to-white backdrop-blur-md shadow-md">
+        <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md shadow-md">
             <div className="flex h-14 items-center gap-4 px-4">
                 {/* Menu Button (Mobile) */}
                 <Button
@@ -51,8 +51,8 @@ export function Header({ onMenuClick }: HeaderProps) {
                     </span>
                 </div>
 
-                {/* Search - Centralizado */}
-                <div className="flex-1 flex justify-center px-4">
+                {/* Search - Centralizado (oculto em telas muito pequenas) */}
+                <div className="hidden md:flex flex-1 justify-center px-4">
                     <div className="relative w-full max-w-md">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input

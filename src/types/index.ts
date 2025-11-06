@@ -1,5 +1,12 @@
 // Tipos principais da aplicação
 
+// Tipos Financeiros - Tipos específicos
+export type TipoReceita =
+    | 'Novo Projeto'
+    | 'Confirmação de Projeto'
+    | 'Nova Receita'
+    | 'Confirmar Receita';
+
 export interface Endereco {
     logradouro: string;
     numero: string;
@@ -396,6 +403,7 @@ export interface CategoriaFinanceira {
 export interface Movimentacao {
     id: number;
     tipo: 'Receita' | 'Despesa' | 'Transferência';
+    tipoReceita?: TipoReceita; // Tipo específico para receitas
     descricao: string;
     valor: number;
     data: string;

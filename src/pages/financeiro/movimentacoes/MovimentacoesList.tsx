@@ -39,7 +39,13 @@ export function MovimentacoesList() {
                 description="Gerencie receitas, despesas e transferências"
                 action={
                     <div className="flex gap-2">
-                        <Button variant="outline" onClick={() => navigate('/financeiro/receitas/novo')}>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                console.log('Navegando para receitas/novo');
+                                navigate('/financeiro/receitas/novo');
+                            }}
+                        >
                             <Plus className="mr-2 h-4 w-4" />
                             Receita
                         </Button>
@@ -95,6 +101,7 @@ export function MovimentacoesList() {
                             <TableRow>
                                 <TableHead>Data</TableHead>
                                 <TableHead>Descrição</TableHead>
+                                <TableHead>Tipo</TableHead>
                                 <TableHead>Categoria</TableHead>
                                 <TableHead>Conta</TableHead>
                                 <TableHead>Valor</TableHead>
@@ -110,6 +117,15 @@ export function MovimentacoesList() {
                                             {getIconByTipo(mov.tipo)}
                                             <span>{mov.descricao}</span>
                                         </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        {mov.tipo === 'Receita' && mov.tipoReceita ? (
+                                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                                {mov.tipoReceita}
+                                            </Badge>
+                                        ) : (
+                                            <span className="text-sm text-muted-foreground">{mov.tipo}</span>
+                                        )}
                                     </TableCell>
                                     <TableCell>
                                         <Badge variant="outline" style={{ borderColor: mov.categoria.cor, color: mov.categoria.cor }}>
