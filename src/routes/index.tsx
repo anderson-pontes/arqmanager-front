@@ -13,6 +13,8 @@ import { ClienteDetail } from '@/pages/clientes/ClienteDetail';
 import { ContasList } from '@/pages/financeiro/contas/ContasList';
 import { ContaForm } from '@/pages/financeiro/contas/ContaForm';
 import { ContaDetail } from '@/pages/financeiro/contas/ContaDetail';
+import { NovaReceitaContaPage } from '@/pages/financeiro/contas/NovaReceitaContaPage';
+import { NovaDespesaContaPage } from '@/pages/financeiro/contas/NovaDespesaContaPage';
 import { MovimentacoesList } from '@/pages/financeiro/movimentacoes/MovimentacoesList';
 import { ReceitaForm } from '@/pages/financeiro/receitas/ReceitaForm';
 import { DespesaForm } from '@/pages/financeiro/despesas/DespesaForm';
@@ -100,6 +102,14 @@ export const router = createBrowserRouter([
             {
                 path: 'financeiro/contas/:id',
                 element: <ContaDetail />,
+            },
+            {
+                path: 'financeiro/contas/:id/receitas/nova',
+                element: <NovaReceitaContaPage />,
+            },
+            {
+                path: 'financeiro/contas/:id/despesas/nova',
+                element: <NovaDespesaContaPage />,
             },
             {
                 path: 'financeiro/contas/:id/editar',

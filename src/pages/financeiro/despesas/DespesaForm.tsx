@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,7 +30,11 @@ const despesaSchema = z.object({
 
 type DespesaFormData = z.infer<typeof despesaSchema>;
 
-export function DespesaForm() {
+interface DespesaFormProps {
+    defaultContaId?: number;
+}
+
+export function DespesaForm({ defaultContaId }: DespesaFormProps) {
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -47,6 +51,12 @@ export function DespesaForm() {
     });
 
     const status = form.watch('status');
+
+    useEffect(() => {
+        if (defaultContaId) {
+            form.setValue('contaId', String(defaultContaId));
+        }
+    }, [defaultContaId]);
 
     const onSubmit = async (data: DespesaFormData) => {
         setIsSubmitting(true);

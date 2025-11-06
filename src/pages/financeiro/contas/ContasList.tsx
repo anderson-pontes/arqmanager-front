@@ -17,6 +17,7 @@ import { mockContasBancarias } from '@/data';
 import { formatCurrency } from '@/utils/formatters';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { toast } from 'sonner';
+ 
 
 export function ContasList() {
     const navigate = useNavigate();
@@ -24,6 +25,7 @@ export function ContasList() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const isLoading = useLoading(800);
+    
 
     const saldoTotal = contas.reduce((acc, conta) => acc + conta.saldoAtual, 0);
 
@@ -61,10 +63,6 @@ export function ContasList() {
                 description="Gerencie as contas bancárias do escritório"
                 action={
                     <div className="flex gap-2">
-                        <Button variant="outline" onClick={() => navigate('/financeiro/movimentacoes')}>
-                            <TrendingUp className="mr-2 h-4 w-4" />
-                            Movimentações
-                        </Button>
                         <Button onClick={() => navigate('/financeiro/contas/novo')}>
                             <Plus className="mr-2 h-4 w-4" />
                             Nova Conta
@@ -183,16 +181,18 @@ export function ContasList() {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => handleDelete(conta.id)}
+                                        onClick={(e) => { e.stopPropagation(); handleDelete(conta.id); }}
                                     >
                                         <Trash2 className="h-4 w-4 text-destructive" />
                                     </Button>
+                                    
                                 </div>
                             </div>
                         </CardContent>
                     </Card>
                 ))}
             </div>
+ 
 
             <ConfirmDialog
                 open={deleteDialogOpen}

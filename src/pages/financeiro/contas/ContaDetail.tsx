@@ -20,12 +20,16 @@ import {
 import { mockContasBancarias, mockMovimentacoes } from '@/data';
 import { formatCurrency, formatDate } from '@/utils/formatters';
 import { Pagination } from '@/components/common/Pagination';
+ 
+import { ReceitaForm } from '@/pages/financeiro/receitas/ReceitaForm';
+import { DespesaForm } from '@/pages/financeiro/despesas/DespesaForm';
 
 export function ContaDetail() {
     const navigate = useNavigate();
     const { id } = useParams();
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
+ 
 
     const conta = mockContasBancarias.find((c) => c.id === Number(id));
 
@@ -163,11 +167,11 @@ export function ContaDetail() {
                             <div className="flex items-center justify-between">
                                 <CardTitle>Todas as Movimentações</CardTitle>
                                 <div className="flex gap-2">
-                                    <Button size="sm" variant="outline">
+                                    <Button size="sm" variant="outline" onClick={() => navigate(`/financeiro/contas/${id}/receitas/nova`)}>
                                         <Plus className="mr-2 h-4 w-4" />
                                         Nova Receita
                                     </Button>
-                                    <Button size="sm" variant="outline">
+                                    <Button size="sm" variant="outline" onClick={() => navigate(`/financeiro/contas/${id}/despesas/nova`)}>
                                         <Plus className="mr-2 h-4 w-4" />
                                         Nova Despesa
                                     </Button>
@@ -253,7 +257,7 @@ export function ContaDetail() {
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <CardTitle>Receitas</CardTitle>
-                                <Button size="sm">
+                                <Button size="sm" onClick={() => navigate(`/financeiro/contas/${id}/receitas/nova`)}>
                                     <Plus className="mr-2 h-4 w-4" />
                                     Nova Receita
                                 </Button>
@@ -271,7 +275,7 @@ export function ContaDetail() {
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <CardTitle>Despesas</CardTitle>
-                                <Button size="sm">
+                                <Button size="sm" onClick={() => navigate(`/financeiro/contas/${id}/despesas/nova`)}>
                                     <Plus className="mr-2 h-4 w-4" />
                                     Nova Despesa
                                 </Button>
@@ -330,6 +334,7 @@ export function ContaDetail() {
                     </Card>
                 </TabsContent>
             </Tabs>
+            
         </div>
     );
 }

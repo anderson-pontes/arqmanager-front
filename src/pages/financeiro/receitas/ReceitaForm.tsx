@@ -29,7 +29,11 @@ interface ReceitaFormData {
     recorrente: boolean;
 }
 
-export function ReceitaForm() {
+interface ReceitaFormProps {
+    defaultContaId?: number;
+}
+
+export function ReceitaForm({ defaultContaId }: ReceitaFormProps) {
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -70,6 +74,12 @@ export function ReceitaForm() {
         'Nova Receita',
         'Confirmar Receita',
     ];
+
+    // Pré-seleciona a conta quando fornecido defaultContaId
+    // e garante que o Select mostre o valor inicial
+    if (defaultContaId && !contas.find((c) => c.id === defaultContaId)) {
+        console.warn('defaultContaId não encontrado entre contas ativas');
+    }
 
     return (
         <div>
@@ -191,7 +201,11 @@ export function ReceitaForm() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="contaId">Conta *</Label>
-                                <Select onValueChange={(value) => setValue('contaId', Number(value))} required>
+                                <Select
+                                    onValueChange={(value) => setValue('contaId', Number(value))}
+                                    required
+                                    defaultValue={defaultContaId ? String(defaultContaId) : undefined}
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Selecione" />
                                     </SelectTrigger>
