@@ -11,10 +11,10 @@ import {
     CardContent,
     CardDescription,
     CardHeader,
-    CardTitle,
 } from '@/components/ui/card';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'sonner';
+import logoArqManager from '@/assets/logoarmanager.png';
 
 const loginSchema = z.object({
     email: z.string().min(1, 'Email é obrigatório').email('Email inválido'),
@@ -121,18 +121,12 @@ export function Login() {
             <Card className="w-full max-w-md relative z-10 shadow-2xl backdrop-blur-sm bg-white/95">
                 <CardHeader className="space-y-1">
                     <div className="flex items-center justify-center mb-6">
-                        <div className="relative">
-                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-purple-600 text-primary-foreground font-bold text-2xl shadow-lg">
-                                ARQ
-                            </div>
-                            {/* Detalhe geométrico no logo */}
-                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-purple-400 rounded-full" />
-                            <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-purple-300 rounded-sm rotate-45" />
-                        </div>
+                        <img
+                            src={logoArqManager}
+                            alt="ARQManager Logo"
+                            className="h-32 w-auto object-contain"
+                        />
                     </div>
-                    <CardTitle className="text-3xl text-center font-bold bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                        ARQManager
-                    </CardTitle>
                     <CardDescription className="text-center text-base">
                         Entre com suas credenciais para acessar o sistema
                     </CardDescription>

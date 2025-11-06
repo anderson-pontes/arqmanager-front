@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getInitials } from '@/utils/formatters';
 import { EscritorioSwitcher } from './EscritorioSwitcher';
+import logoSemNome from '@/assets/logosemnome.png';
 
 interface HeaderProps {
     onMenuClick?: () => void;
@@ -43,9 +44,11 @@ export function Header({ onMenuClick }: HeaderProps) {
 
                 {/* Logo */}
                 <div className="flex items-center gap-2 shrink-0">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
-                        ARQ
-                    </div>
+                    <img
+                        src={logoSemNome}
+                        alt="ARQManager"
+                        className="h-16 w-16 object-contain"
+                    />
                     <span className="hidden font-semibold sm:inline-block">
                         ARQManager
                     </span>
