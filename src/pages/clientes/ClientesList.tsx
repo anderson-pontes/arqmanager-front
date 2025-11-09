@@ -1,10 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { useLoading } from '@/hooks/useLoading';
 import { SkeletonStatCard, SkeletonCard } from '@/components/common/SkeletonCard';
 import { SkeletonTable } from '@/components/common/SkeletonTable';
 import {
@@ -23,60 +22,107 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Plus, Search, Mail, Phone, Edit, Trash2, MapPin, Building2, User } from 'lucide-react';
-import { mockClientes } from '@/data';
+import { Plus, Search, Mail, Phone, Edit, Trash2, MapPin, Building2, User, X } from 'lucide-react';
 import { getInitials, formatPhone, formatCPF, formatCNPJ } from '@/utils/formatters';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { Pagination } from '@/components/common/Pagination';
 import { toast } from 'sonner';
+import { useClientes } from '@/hooks/useClientes';
 
 export function ClientesList() {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
-    const [clientes] = useState(mockClientes);
+    const [activeSearch, setActiveSearch] = useState(''); // Busca ativa (após clicar em Buscar)
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
-    const isLoading = useLoading(800);
+    const [pageSize, setPageSize] = useState(20);
 
-    const filteredClientes = useMemo(() => {
-        return clientes.filter((cliente) =>
-            cliente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            cliente.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            cliente.identificacao.includes(searchTerm) ||
-            cliente.endereco.cidade.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [clientes, searchTerm]);
+    // ✅ Hook real do backend com paginação e busca
+    const {
+        clientes,
+        total,
+        loading,
+        error,
+        fetchClientes,
+        deleteCliente,
+    } = useClientes(
+        {
+            skip: (currentPage - 1) * pageSize,
+            limit: pageSize,
+            search: activeSearch || undefined // ✅ Usa busca ativa
+        },
+        true // autoFetch
+    );
 
-    const totalPages = Math.ceil(filteredClientes.length / pageSize);
+    // Função para realizar busca
+    const handleSearch = () => {
+        setActiveSearch(searchTerm);
+        setCurrentPage(1); // Volta para primeira página
+    };
 
-    const paginatedClientes = useMemo(() => {
-        const startIndex = (currentPage - 1) * pageSize;
-        const endIndex = startIndex + pageSize;
-        return filteredClientes.slice(startIndex, endIndex);
-    }, [filteredClientes, currentPage, pageSize]);
+    // Função para limpar busca
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        setActiveSearch('');
+        setCurrentPage(1);
+    };
+
+    // Buscar ao pressionar Enter
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
+
+    // Paginação do backend
+    const totalPages = Math.ceil(total / pageSize);
+
+    // Usa clientes diretamente do backend (busca já é feita lá)
+    const displayClientes = clientes;
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
+        // Hook recarrega automaticamente quando params mudam
     };
 
     const handlePageSizeChange = (newPageSize: number) => {
         setPageSize(newPageSize);
         setCurrentPage(1);
+        // Hook recarrega automaticamente quando params mudam
     };
+
+    // Recarregar quando página ou tamanho mudar
+    useEffect(() => {
+        fetchClientes();
+    }, [currentPage, pageSize]);
 
     const handleDelete = (id: number) => {
         setSelectedId(id);
         setDeleteDialogOpen(true);
     };
 
-    const confirmDelete = () => {
-        toast.success('Cliente excluído com sucesso!');
-        setDeleteDialogOpen(false);
+    const confirmDelete = async () => {
+        if (!selectedId) return;
+
+        try {
+            await deleteCliente(selectedId);
+            toast.success('Cliente excluído com sucesso!');
+            setDeleteDialogOpen(false);
+            setSelectedId(null);
+        } catch (error) {
+            toast.error('Erro ao excluir cliente');
+        }
     };
 
-    if (isLoading) {
+    // Mostrar erro se houver
+    useEffect(() => {
+        if (error) {
+            toast.error(error);
+        }
+    }, [error]);
+
+    if (loading) {
         return (
             <div>
                 <PageHeader
@@ -112,23 +158,52 @@ export function ClientesList() {
 
             <Card className="mb-6 backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
                 <CardContent className="pt-6">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="Buscar por nome, email, CPF/CNPJ ou cidade..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-9"
-                        />
+                    <div className="flex gap-2">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                type="text"
+                                placeholder="Buscar por nome, email, CPF/CNPJ ou cidade..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                onKeyPress={handleKeyPress}
+                                className="pl-9"
+                            />
+                        </div>
+                        <Button
+                            onClick={handleSearch}
+                            disabled={loading}
+                            className="shrink-0"
+                        >
+                            <Search className="mr-2 h-4 w-4" />
+                            Buscar
+                        </Button>
+                        <Button
+                            onClick={handleClearSearch}
+                            variant="outline"
+                            disabled={loading || (!searchTerm && !activeSearch)}
+                            className="shrink-0"
+                        >
+                            <X className="mr-2 h-4 w-4" />
+                            Limpar
+                        </Button>
                     </div>
                 </CardContent>
             </Card>
 
             <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
                 <CardHeader>
-                    <CardTitle>{filteredClientes.length} Cliente(s)</CardTitle>
-                    <CardDescription>Lista de todos os clientes cadastrados</CardDescription>
+                    <CardTitle>
+                        {total} Cliente(s)
+                        {activeSearch && (
+                            <span className="text-sm font-normal text-muted-foreground ml-2">
+                                (buscando por "{activeSearch}")
+                            </span>
+                        )}
+                    </CardTitle>
+                    <CardDescription>
+                        Mostrando {clientes.length} de {total} clientes (Página {currentPage} de {totalPages})
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Table>
@@ -143,7 +218,7 @@ export function ClientesList() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {paginatedClientes.map((cliente) => (
+                            {displayClientes.map((cliente) => (
                                 <TableRow
                                     key={cliente.id}
                                     className="cursor-pointer hover:bg-accent/50"
@@ -159,7 +234,7 @@ export function ClientesList() {
                                             <div>
                                                 <p className="font-medium">{cliente.nome}</p>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {cliente.tipoPessoa === 'Física'
+                                                    {cliente.tipo_pessoa === 'Física'
                                                         ? formatCPF(cliente.identificacao)
                                                         : formatCNPJ(cliente.identificacao)}
                                                 </p>
@@ -182,16 +257,16 @@ export function ClientesList() {
                                         <div className="flex items-center gap-2 text-sm">
                                             <MapPin className="h-3 w-3 text-muted-foreground" />
                                             <span>
-                                                {cliente.endereco.cidade}, {cliente.endereco.uf}
+                                                {cliente.cidade || 'N/A'}, {cliente.uf || ''}
                                             </span>
                                         </div>
                                     </TableCell>
                                     <TableCell>
                                         <Badge
                                             variant="outline"
-                                            className={cliente.tipoPessoa === 'Física' ? 'border-blue-200 text-blue-700' : 'border-green-200 text-green-700'}
+                                            className={cliente.tipo_pessoa === 'Física' ? 'border-blue-200 text-blue-700' : 'border-green-200 text-green-700'}
                                         >
-                                            {cliente.tipoPessoa === 'Física' ? (
+                                            {cliente.tipo_pessoa === 'Física' ? (
                                                 <><User className="mr-1 h-3 w-3" /> Física</>
                                             ) : (
                                                 <><Building2 className="mr-1 h-3 w-3" /> Jurídica</>
@@ -234,18 +309,20 @@ export function ClientesList() {
                         </TableBody>
                     </Table>
 
-                    {filteredClientes.length === 0 && (
+                    {displayClientes.length === 0 && !loading && (
                         <div className="text-center py-12">
-                            <p className="text-muted-foreground">Nenhum cliente encontrado</p>
+                            <p className="text-muted-foreground">
+                                {searchTerm ? 'Nenhum cliente encontrado com esse termo' : 'Nenhum cliente cadastrado'}
+                            </p>
                         </div>
                     )}
 
-                    {filteredClientes.length > 0 && (
+                    {total > 0 && (
                         <Pagination
                             currentPage={currentPage}
                             totalPages={totalPages}
                             pageSize={pageSize}
-                            totalItems={filteredClientes.length}
+                            totalItems={total}
                             onPageChange={handlePageChange}
                             onPageSizeChange={handlePageSizeChange}
                         />
