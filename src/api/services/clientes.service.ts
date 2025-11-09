@@ -119,9 +119,13 @@ export const clientesService = {
 
     /**
      * Remove um cliente
+     * @param id - ID do cliente
+     * @param permanent - Se true, remove permanentemente. Se false, soft delete (marca como inativo)
      */
-    async delete(id: number): Promise<void> {
-        await apiClient.delete(API_ENDPOINTS.clientes.delete(id));
+    async delete(id: number, permanent: boolean = false): Promise<void> {
+        await apiClient.delete(API_ENDPOINTS.clientes.delete(id), {
+            params: { permanent },
+        });
     },
 
     /**

@@ -42,8 +42,23 @@ export const useClientes = (params?: ClienteListParams, autoFetch = false) => {
             setTotal(total + 1);
             return newCliente;
         } catch (err: any) {
-            const errorMessage =
-                err.response?.data?.detail || 'Erro ao criar cliente';
+            // Melhor tratamento de erro para debug
+            console.error('Erro completo:', err);
+            console.error('Resposta do servidor:', err.response?.data);
+
+            let errorMessage = 'Erro ao criar cliente';
+
+            if (err.response?.data?.detail) {
+                // Se detail é um array (erros de validação do Pydantic)
+                if (Array.isArray(err.response.data.detail)) {
+                    errorMessage = err.response.data.detail
+                        .map((e: any) => `${e.loc.join('.')}: ${e.msg}`)
+                        .join(', ');
+                } else {
+                    errorMessage = err.response.data.detail;
+                }
+            }
+
             setError(errorMessage);
             throw new Error(errorMessage);
         } finally {
@@ -61,8 +76,23 @@ export const useClientes = (params?: ClienteListParams, autoFetch = false) => {
             );
             return updatedCliente;
         } catch (err: any) {
-            const errorMessage =
-                err.response?.data?.detail || 'Erro ao atualizar cliente';
+            // Melhor tratamento de erro para debug
+            console.error('Erro completo:', err);
+            console.error('Resposta do servidor:', err.response?.data);
+
+            let errorMessage = 'Erro ao atualizar cliente';
+
+            if (err.response?.data?.detail) {
+                // Se detail é um array (erros de validação do Pydantic)
+                if (Array.isArray(err.response.data.detail)) {
+                    errorMessage = err.response.data.detail
+                        .map((e: any) => `${e.loc.join('.')}: ${e.msg}`)
+                        .join(', ');
+                } else {
+                    errorMessage = err.response.data.detail;
+                }
+            }
+
             setError(errorMessage);
             throw new Error(errorMessage);
         } finally {
@@ -70,11 +100,11 @@ export const useClientes = (params?: ClienteListParams, autoFetch = false) => {
         }
     };
 
-    const deleteCliente = async (id: number) => {
+    const deleteCliente = async (id: number, permanent: boolean = false) => {
         setLoading(true);
         setError(null);
         try {
-            await clientesService.delete(id);
+            await clientesService.delete(id, permanent);
             setClientes(clientes.filter((c) => c.id !== id));
             setTotal(total - 1);
         } catch (err: any) {

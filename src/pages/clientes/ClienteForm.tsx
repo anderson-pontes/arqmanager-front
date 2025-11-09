@@ -31,11 +31,11 @@ import { clientesService, type Cliente } from '@/api/services/clientes.service';
 // Schema simplificado para corresponder à API
 const clienteSchema = z.object({
     nome: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
-    email: z.string().email('Email inválido').optional().or(z.literal('')),
-    cpf_cnpj: z.string().optional().or(z.literal('')),
+    email: z.string().min(1, 'Email é obrigatório').email('Email inválido'),
+    cpf_cnpj: z.string().min(1, 'CPF/CNPJ é obrigatório'),
     tipo_pessoa: z.enum(['fisica', 'juridica']),
     data_nascimento: z.string().optional().or(z.literal('')),
-    telefone: z.string().optional().or(z.literal('')),
+    telefone: z.string().min(1, 'Telefone é obrigatório'),
     endereco: z.string().optional().or(z.literal('')),
     cidade: z.string().optional().or(z.literal('')),
     estado: z.string().optional().or(z.literal('')),
@@ -134,8 +134,8 @@ export function ClienteForm() {
 
     const onSubmit = async (data: ClienteFormData) => {
         try {
-            // Limpar campos vazios
-            const cleanData = {
+            // Limpar campos vazios e remover data_nascimento se for pessoa jurídica
+            const cleanData: any = {
                 ...data,
                 email: data.email || undefined,
                 cpf_cnpj: data.cpf_cnpj || undefined,
@@ -146,6 +146,11 @@ export function ClienteForm() {
                 cep: data.cep || undefined,
                 observacoes: data.observacoes || undefined,
             };
+
+            // Só incluir data_nascimento se for pessoa física E tiver valor
+            if (data.tipo_pessoa === 'fisica' && data.data_nascimento) {
+                cleanData.data_nascimento = data.data_nascimento;
+            }
 
             if (isEdit && id) {
                 await updateCliente(Number(id), cleanData);

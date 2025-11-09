@@ -9,8 +9,20 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import {
     Edit,
     Mail,
@@ -25,16 +37,22 @@ import {
     FileText,
     DollarSign,
     Loader2,
+    Trash2,
 } from 'lucide-react';
 import { getInitials, formatPhone, formatCPF, formatCNPJ, formatDate } from '@/utils/formatters';
 import { clientesService, type Cliente } from '@/api/services/clientes.service';
 import { toast } from 'sonner';
+import { useClientes } from '@/hooks/useClientes';
 
 export function ClienteDetail() {
     const navigate = useNavigate();
     const { id } = useParams();
     const [cliente, setCliente] = useState<Cliente | null>(null);
     const [loading, setLoading] = useState(true);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [permanentDelete, setPermanentDelete] = useState(false);
+    const { deleteCliente } = useClientes();
 
     useEffect(() => {
         const fetchCliente = async () => {
@@ -54,6 +72,27 @@ export function ClienteDetail() {
 
         fetchCliente();
     }, [id]);
+
+    const handleDelete = async () => {
+        if (!id) return;
+
+        setDeleting(true);
+        try {
+            await deleteCliente(Number(id), permanentDelete);
+            const message = permanentDelete
+                ? 'Cliente excluído permanentemente!'
+                : 'Cliente desativado com sucesso!';
+            toast.success(message);
+            navigate('/clientes');
+        } catch (error: any) {
+            toast.error('Erro ao excluir cliente');
+            console.error('Erro ao excluir cliente:', error);
+        } finally {
+            setDeleting(false);
+            setShowDeleteDialog(false);
+            setPermanentDelete(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -90,10 +129,20 @@ export function ClienteDetail() {
                 title="Detalhes do Cliente"
                 showBack
                 action={
-                    <Button onClick={() => navigate(`/clientes/${id}/editar`)}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Editar
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => setShowDeleteDialog(true)}
+                            disabled={deleting}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Excluir
+                        </Button>
+                        <Button onClick={() => navigate(`/clientes/${id}/editar`)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Editar
+                        </Button>
+                    </div>
                 }
             />
 
@@ -319,6 +368,65 @@ export function ClienteDetail() {
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Modal de Confirmação de Exclusão */}
+            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Tem certeza que deseja {permanentDelete ? 'excluir permanentemente' : 'desativar'} o cliente <strong>{cliente?.nome}</strong>?
+                            <br />
+                            <br />
+                            {permanentDelete ? (
+                                <span className="text-destructive font-semibold">
+                                    ⚠️ ATENÇÃO: Esta ação é IRREVERSÍVEL! O cliente será removido permanentemente do banco de dados.
+                                </span>
+                            ) : (
+                                <span>
+                                    O cliente será marcado como inativo e não aparecerá mais nas listagens. Você poderá reativá-lo posteriormente.
+                                </span>
+                            )}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <div className="flex items-center space-x-2 px-6 py-4">
+                        <Checkbox
+                            id="permanent"
+                            checked={permanentDelete}
+                            onCheckedChange={(checked) => setPermanentDelete(checked as boolean)}
+                            disabled={deleting}
+                        />
+                        <Label
+                            htmlFor="permanent"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                            Excluir permanentemente do banco de dados
+                        </Label>
+                    </div>
+
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDelete}
+                            disabled={deleting}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            {deleting ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    {permanentDelete ? 'Excluindo permanentemente...' : 'Desativando...'}
+                                </>
+                            ) : (
+                                <>
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    {permanentDelete ? 'Excluir Permanentemente' : 'Desativar'}
+                                </>
+                            )}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
