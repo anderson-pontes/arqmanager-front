@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -23,15 +24,50 @@ import {
     FolderKanban,
     FileText,
     DollarSign,
+    Loader2,
 } from 'lucide-react';
-import { mockClientes } from '@/data';
 import { getInitials, formatPhone, formatCPF, formatCNPJ, formatDate } from '@/utils/formatters';
+import { clientesService, type Cliente } from '@/api/services/clientes.service';
+import { toast } from 'sonner';
 
 export function ClienteDetail() {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [cliente, setCliente] = useState<Cliente | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    const cliente = mockClientes.find((c) => c.id === Number(id));
+    useEffect(() => {
+        const fetchCliente = async () => {
+            if (!id) return;
+
+            setLoading(true);
+            try {
+                const data = await clientesService.getById(Number(id));
+                setCliente(data);
+            } catch (error: any) {
+                console.error('Erro ao buscar cliente:', error);
+                toast.error('Erro ao carregar dados do cliente');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCliente();
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div>
+                <PageHeader title="Carregando..." showBack />
+                <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
+                    <CardContent className="py-12 text-center">
+                        <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
+                        <p className="text-muted-foreground mt-4">Carregando dados do cliente...</p>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
 
     if (!cliente) {
         return (
@@ -80,9 +116,9 @@ export function ClienteDetail() {
                                     )}
                                     <Badge
                                         variant="outline"
-                                        className={cliente.tipoPessoa === 'Física' ? 'border-blue-200 text-blue-700' : 'border-green-200 text-green-700'}
+                                        className={cliente.tipo_pessoa === 'fisica' ? 'border-blue-200 text-blue-700' : 'border-green-200 text-green-700'}
                                     >
-                                        {cliente.tipoPessoa === 'Física' ? (
+                                        {cliente.tipo_pessoa === 'fisica' ? (
                                             <><User className="mr-1 h-3 w-3" /> Física</>
                                         ) : (
                                             <><Building2 className="mr-1 h-3 w-3" /> Jurídica</>
@@ -94,9 +130,9 @@ export function ClienteDetail() {
                             <div className="flex-1 space-y-4">
                                 <div>
                                     <h2 className="text-2xl font-bold">{cliente.nome}</h2>
-                                    {cliente.razaoSocial && (
+                                    {cliente.razao_social && (
                                         <p className="text-lg text-muted-foreground mt-1">
-                                            {cliente.razaoSocial}
+                                            {cliente.razao_social}
                                         </p>
                                     )}
                                 </div>
@@ -130,12 +166,12 @@ export function ClienteDetail() {
                                         </div>
                                         <div>
                                             <p className="text-sm text-muted-foreground">
-                                                {cliente.tipoPessoa === 'Física' ? 'CPF' : 'CNPJ'}
+                                                {cliente.tipo_pessoa === 'fisica' ? 'CPF' : 'CNPJ'}
                                             </p>
                                             <p className="font-medium">
-                                                {cliente.tipoPessoa === 'Física'
-                                                    ? formatCPF(cliente.identificacao)
-                                                    : formatCNPJ(cliente.identificacao)}
+                                                {cliente.tipo_pessoa === 'fisica'
+                                                    ? formatCPF(cliente.cpf_cnpj)
+                                                    : formatCNPJ(cliente.cpf_cnpj)}
                                             </p>
                                         </div>
                                     </div>
@@ -152,29 +188,19 @@ export function ClienteDetail() {
                                         </div>
                                     )}
 
-                                    {cliente.dataNascimento && (
+                                    {cliente.data_nascimento && (
                                         <div className="flex items-center gap-3">
                                             <div className="p-2 rounded-lg bg-primary/10">
                                                 <Calendar className="h-4 w-4 text-primary" />
                                             </div>
                                             <div>
                                                 <p className="text-sm text-muted-foreground">Data de Nascimento</p>
-                                                <p className="font-medium">{formatDate(cliente.dataNascimento)}</p>
+                                                <p className="font-medium">{formatDate(cliente.data_nascimento)}</p>
                                             </div>
                                         </div>
                                     )}
 
-                                    {cliente.indicadoPor && (
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2 rounded-lg bg-primary/10">
-                                                <User className="h-4 w-4 text-primary" />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm text-muted-foreground">Indicado Por</p>
-                                                <p className="font-medium">{cliente.indicadoPor}</p>
-                                            </div>
-                                        </div>
-                                    )}
+
                                 </div>
                             </div>
                         </div>
@@ -182,43 +208,40 @@ export function ClienteDetail() {
                 </Card>
 
                 {/* Endereço */}
-                <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <MapPin className="h-5 w-5" />
-                            Endereço
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                        <div>
-                            <p className="font-medium">
-                                {cliente.endereco.logradouro}, {cliente.endereco.numero}
-                            </p>
-                            {cliente.endereco.complemento && (
-                                <p className="text-sm text-muted-foreground">
-                                    {cliente.endereco.complemento}
-                                </p>
+                {(cliente.endereco || cliente.cidade) && (
+                    <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <MapPin className="h-5 w-5" />
+                                Endereço
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                            {cliente.endereco && (
+                                <div>
+                                    <p className="font-medium">{cliente.endereco}</p>
+                                </div>
                             )}
-                        </div>
-                        <div>
-                            <p className="text-sm text-muted-foreground">Bairro</p>
-                            <p className="font-medium">{cliente.endereco.bairro}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-muted-foreground">Cidade/UF</p>
-                            <p className="font-medium">
-                                {cliente.endereco.cidade}, {cliente.endereco.uf}
-                            </p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-muted-foreground">CEP</p>
-                            <p className="font-medium">{cliente.endereco.cep}</p>
-                        </div>
-                    </CardContent>
-                </Card>
+                            {cliente.cidade && (
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Cidade/Estado</p>
+                                    <p className="font-medium">
+                                        {cliente.cidade}{cliente.estado && `, ${cliente.estado}`}
+                                    </p>
+                                </div>
+                            )}
+                            {cliente.cep && (
+                                <div>
+                                    <p className="text-sm text-muted-foreground">CEP</p>
+                                    <p className="font-medium">{cliente.cep}</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Informações Adicionais */}
-                {cliente.tipoPessoa === 'Jurídica' && (
+                {cliente.tipo_pessoa === 'juridica' && (cliente.inscricao_estadual || cliente.inscricao_municipal) && (
                     <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -227,21 +250,36 @@ export function ClienteDetail() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {cliente.inscricaoEstadual && (
+                            {cliente.inscricao_estadual && (
                                 <div>
                                     <p className="text-sm text-muted-foreground">Inscrição Estadual</p>
-                                    <p className="font-medium">{cliente.inscricaoEstadual}</p>
+                                    <p className="font-medium">{cliente.inscricao_estadual}</p>
                                 </div>
                             )}
-                            {cliente.inscricaoMunicipal && (
+                            {cliente.inscricao_municipal && (
                                 <>
                                     <Separator />
                                     <div>
                                         <p className="text-sm text-muted-foreground">Inscrição Municipal</p>
-                                        <p className="font-medium">{cliente.inscricaoMunicipal}</p>
+                                        <p className="font-medium">{cliente.inscricao_municipal}</p>
                                     </div>
                                 </>
                             )}
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Observações */}
+                {cliente.observacoes && (
+                    <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <MessageSquare className="h-5 w-5" />
+                                Observações
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{cliente.observacoes}</p>
                         </CardContent>
                     </Card>
                 )}

@@ -14,7 +14,6 @@ export interface Cliente {
     cep?: string;
     observacoes?: string;
     ativo: boolean;
-    escritorio_id: number;
     created_at: string;
     updated_at: string;
 }

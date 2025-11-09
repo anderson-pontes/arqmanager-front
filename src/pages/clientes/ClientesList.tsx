@@ -234,9 +234,9 @@ export function ClientesList() {
                                             <div>
                                                 <p className="font-medium">{cliente.nome}</p>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {cliente.tipo_pessoa === 'Física'
-                                                        ? formatCPF(cliente.identificacao)
-                                                        : formatCNPJ(cliente.identificacao)}
+                                                    {cliente.tipo_pessoa === 'fisica'
+                                                        ? formatCPF(cliente.cpf_cnpj)
+                                                        : formatCNPJ(cliente.cpf_cnpj)}
                                                 </p>
                                             </div>
                                         </div>
@@ -264,9 +264,9 @@ export function ClientesList() {
                                     <TableCell>
                                         <Badge
                                             variant="outline"
-                                            className={cliente.tipo_pessoa === 'Física' ? 'border-blue-200 text-blue-700' : 'border-green-200 text-green-700'}
+                                            className={cliente.tipo_pessoa === 'fisica' ? 'border-blue-200 text-blue-700' : 'border-green-200 text-green-700'}
                                         >
-                                            {cliente.tipo_pessoa === 'Física' ? (
+                                            {cliente.tipo_pessoa === 'fisica' ? (
                                                 <><User className="mr-1 h-3 w-3" /> Física</>
                                             ) : (
                                                 <><Building2 className="mr-1 h-3 w-3" /> Jurídica</>

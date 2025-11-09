@@ -72,11 +72,13 @@ export const formatDateTime = (date: string | Date): string => {
     }
 };
 
-export const formatCPF = (cpf: string): string => {
+export const formatCPF = (cpf: string | null | undefined): string => {
+    if (!cpf) return '-';
     return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
 };
 
-export const formatCNPJ = (cnpj: string): string => {
+export const formatCNPJ = (cnpj: string | null | undefined): string => {
+    if (!cnpj) return '-';
     return cnpj.replace(
         /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
         '$1.$2.$3/$4-$5'
