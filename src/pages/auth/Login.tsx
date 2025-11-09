@@ -15,6 +15,7 @@ import {
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'sonner';
 import logoArqManager from '@/assets/logoarmanager.png';
+import type { User } from '@/types';
 
 const loginSchema = z.object({
     email: z.string().min(1, 'Email é obrigatório').email('Email inválido'),
@@ -40,51 +41,56 @@ export function Login() {
         console.log('🔐 Login iniciado com:', data);
         setLoading(true);
         try {
-            // Simulando login com dados mock
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            // ✅ Login real com backend
+            const { authService } = await import('@/api/services/auth.service');
+            const response = await authService.login(data);
 
-            // Busca usuário por email
-            const { findUserByEmail } = await import('@/data');
-            const user = findUserByEmail(data.email);
+            console.log('✅ Login bem-sucedido:', response.user);
 
-            if (!user) {
-                toast.error('Usuário não encontrado');
-                setLoading(false);
-                return;
-            }
+            // Salva tokens
+            authService.saveTokens(response.access_token, response.refresh_token);
 
-            console.log('✅ Usuário encontrado:', user);
-
-            const mockTokens = {
-                accessToken: 'mock-access-token',
-                refreshToken: 'mock-refresh-token',
+            // Adapta usuário do backend para o formato do frontend
+            const user: User = {
+                id: response.user.id,
+                nome: response.user.nome,
+                email: response.user.email,
+                perfil: response.user.perfil || 'Colaborador',
+                escritorioId: response.user.escritorio_id,
+                escritorios: [], // TODO: Backend precisa retornar lista de escritórios
+                foto: response.user.foto,
             };
 
-            // Verifica se o usuário tem múltiplos escritórios
-            const requiresSelection = user.escritorios.length > 1;
+            // Salva usuário no store
+            setAuth(
+                user,
+                response.access_token,
+                response.refresh_token,
+                false // Por enquanto não tem seleção de escritório
+            );
 
-            // Salva no store
-            setAuth(user, mockTokens.accessToken, mockTokens.refreshToken, requiresSelection);
+            toast.success(`Bem-vindo, ${user.nome}!`);
 
-            toast.success('Login realizado com sucesso!');
-
-            // Se tem múltiplos escritórios, redireciona para seleção
-            if (requiresSelection) {
-                console.log('🏢 Usuário tem múltiplos escritórios, redirecionando para seleção...');
-                navigate('/selecionar-escritorio');
-            } else if (user.escritorios.length === 1) {
-                // Se tem apenas um escritório, seleciona automaticamente
-                console.log('🏢 Selecionando escritório único automaticamente...');
-                const { setEscritorioAtual } = useAuthStore.getState();
-                setEscritorioAtual(user.escritorios[0]);
-                console.log('🚀 Redirecionando para dashboard...');
-                navigate('/dashboard');
-            } else {
-                toast.error('Usuário sem escritórios vinculados');
-            }
-        } catch (error) {
+            console.log('🚀 Redirecionando para dashboard...');
+            navigate('/dashboard');
+        } catch (error: any) {
             console.error('❌ Erro no login:', error);
-            toast.error('Erro ao fazer login. Verifique suas credenciais.');
+
+            // Trata erros específicos
+            let errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
+
+            if (error.response?.data?.detail) {
+                const detail = error.response.data.detail;
+                if (typeof detail === 'string') {
+                    errorMessage = detail;
+                } else if (Array.isArray(detail)) {
+                    errorMessage = detail.map((e: any) => e.msg).join(', ');
+                }
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }

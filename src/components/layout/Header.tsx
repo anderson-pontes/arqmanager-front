@@ -24,9 +24,19 @@ export function Header({ onMenuClick }: HeaderProps) {
     const { user, clearAuth } = useAuthStore();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        clearAuth();
-        navigate('/login');
+    const handleLogout = async () => {
+        try {
+            // ✅ Logout real com backend
+            const { authService } = await import('@/api/services/auth.service');
+            await authService.logout();
+        } catch (error) {
+            console.error('Erro ao fazer logout no backend:', error);
+            // Continua com logout local mesmo se backend falhar
+        } finally {
+            // Limpa dados locais
+            clearAuth();
+            navigate('/login');
+        }
     };
 
     return (

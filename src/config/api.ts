@@ -15,9 +15,9 @@ export const API_ENDPOINTS = {
     },
     // Clientes
     clientes: {
-        list: '/clientes',
+        list: '/clientes/', // ✅ Com barra final
         detail: (id: number) => `/clientes/${id}`,
-        create: '/clientes',
+        create: '/clientes/', // ✅ Com barra final
         update: (id: number) => `/clientes/${id}`,
         delete: (id: number) => `/clientes/${id}`,
         projetos: (id: number) => `/clientes/${id}/projetos`,

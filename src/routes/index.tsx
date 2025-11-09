@@ -29,11 +29,16 @@ import { ProjetoForm } from '@/pages/projetos/ProjetoForm';
 import { PropostasList } from '@/pages/propostas/PropostasList';
 import { PropostaDetail } from '@/pages/propostas/PropostaDetail';
 import { PropostaForm } from '@/pages/propostas/PropostaForm';
+import TestIntegration from '@/pages/TestIntegration';
 
 export const router = createBrowserRouter([
     {
         path: '/login',
         element: <Login />,
+    },
+    {
+        path: '/test-integration',
+        element: <TestIntegration />,
     },
     {
         path: '/selecionar-escritorio',
