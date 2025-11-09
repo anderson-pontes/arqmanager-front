@@ -21,6 +21,12 @@ export const formatDate = (date: string | Date): string => {
     if (!date) return '';
 
     try {
+        // Se for string no formato YYYY-MM-DD, parsear manualmente para evitar problema de timezone
+        if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+            const [year, month, day] = date.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
         const d = typeof date === 'string' ? new Date(date) : date;
 
         // Verifica se a data é válida

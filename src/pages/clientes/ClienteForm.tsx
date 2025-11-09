@@ -34,6 +34,7 @@ const clienteSchema = z.object({
     email: z.string().email('Email inválido').optional().or(z.literal('')),
     cpf_cnpj: z.string().optional().or(z.literal('')),
     tipo_pessoa: z.enum(['fisica', 'juridica']),
+    data_nascimento: z.string().optional().or(z.literal('')),
     telefone: z.string().optional().or(z.literal('')),
     endereco: z.string().optional().or(z.literal('')),
     cidade: z.string().optional().or(z.literal('')),
@@ -81,6 +82,7 @@ export function ClienteForm() {
             nome: '',
             email: '',
             cpf_cnpj: '',
+            data_nascimento: '',
             telefone: '',
             endereco: '',
             cidade: '',
@@ -108,6 +110,7 @@ export function ClienteForm() {
                         email: data.email || '',
                         cpf_cnpj: data.cpf_cnpj || '',
                         tipo_pessoa: data.tipo_pessoa,
+                        data_nascimento: data.data_nascimento || '',
                         telefone: data.telefone || '',
                         endereco: data.endereco || '',
                         cidade: data.cidade || '',
@@ -220,17 +223,30 @@ export function ClienteForm() {
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="nome">
-                                    {tipoPessoa === 'fisica' ? 'Nome Completo' : 'Nome/Razão Social'} <span className="text-destructive">*</span>
-                                </Label>
-                                <Input
-                                    id="nome"
-                                    placeholder={tipoPessoa === 'fisica' ? 'Nome completo' : 'Nome ou razão social'}
-                                    {...register('nome')}
-                                />
-                                {errors.nome && (
-                                    <p className="text-sm text-destructive">{errors.nome.message}</p>
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="nome">
+                                        {tipoPessoa === 'fisica' ? 'Nome Completo' : 'Nome/Razão Social'} <span className="text-destructive">*</span>
+                                    </Label>
+                                    <Input
+                                        id="nome"
+                                        placeholder={tipoPessoa === 'fisica' ? 'Nome completo' : 'Nome ou razão social'}
+                                        {...register('nome')}
+                                    />
+                                    {errors.nome && (
+                                        <p className="text-sm text-destructive">{errors.nome.message}</p>
+                                    )}
+                                </div>
+
+                                {tipoPessoa === 'fisica' && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="data_nascimento">Data de Nascimento</Label>
+                                        <Input
+                                            id="data_nascimento"
+                                            type="date"
+                                            {...register('data_nascimento')}
+                                        />
+                                    </div>
                                 )}
                             </div>
                         </CardContent>

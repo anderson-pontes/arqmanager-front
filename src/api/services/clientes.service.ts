@@ -8,6 +8,7 @@ export interface Cliente {
     telefone?: string;
     cpf_cnpj?: string;
     tipo_pessoa: 'fisica' | 'juridica';
+    data_nascimento?: string;
     endereco?: string;
     cidade?: string;
     estado?: string;
@@ -24,6 +25,7 @@ export interface ClienteCreate {
     telefone?: string;
     cpf_cnpj?: string;
     tipo_pessoa: 'fisica' | 'juridica';
+    data_nascimento?: string;
     endereco?: string;
     cidade?: string;
     estado?: string;
