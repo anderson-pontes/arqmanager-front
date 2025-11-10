@@ -9,14 +9,14 @@ import { toast } from 'sonner';
 import { Building2, Check, Shield } from 'lucide-react';
 import type { EscritorioContextInfo } from '@/types';
 
-const PERFIS = ['Admin', 'Gerente', 'Colaborador', 'Financeiro', 'Técnico'];
+const PERFIS = ['Administrador', 'Coordenador de Projetos', 'Produção'];
 
 export function SelecionarContexto() {
     const navigate = useNavigate();
     const { user, isSystemAdmin, setContext, setAdminMode, logout } = useAuthStore();
     const [escritorios, setEscritorios] = useState<EscritorioContextInfo[]>([]);
     const [selectedEscritorio, setSelectedEscritorio] = useState<number | null>(null);
-    const [selectedPerfil, setSelectedPerfil] = useState<string>('Colaborador');
+    const [selectedPerfil, setSelectedPerfil] = useState<string>('Produção');
     const [selectedMode, setSelectedMode] = useState<'escritorio' | 'admin'>('escritorio');
     const [loading, setLoading] = useState(false);
     const [loadingEscritorios, setLoadingEscritorios] = useState(true);

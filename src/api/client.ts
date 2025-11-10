@@ -18,18 +18,8 @@ apiClient.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
         }
         
-        // Adicionar contexto se disponível (via store)
-        try {
-            const authStorage = localStorage.getItem('auth-storage');
-            if (authStorage) {
-                const authState = JSON.parse(authStorage);
-                if (authState?.state?.currentContext?.escritorioId && config.headers) {
-                    config.headers['X-Escritorio-Id'] = authState.state.currentContext.escritorioId.toString();
-                }
-            }
-        } catch (e) {
-            // Ignora erros ao acessar o storage
-        }
+        // O contexto do escritório já está no token JWT, não precisa enviar header adicional
+        // O backend extrai o escritorio_id do token automaticamente via get_current_escritorio()
         
         return config;
     },

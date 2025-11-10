@@ -30,10 +30,12 @@ import { maskCPF, maskPhone } from '@/utils/masks';
 const colaboradorSchema = z.object({
     nome: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
     email: z.string().email('Email inválido'),
-    cpf: z.string().min(11, 'CPF inválido').max(14, 'CPF inválido'),
+    cpf: z.string().optional().refine((val) => !val || val.length === 0 || (val.replace(/\D/g, '').length === 11), {
+        message: 'CPF deve ter 11 dígitos'
+    }),
     telefone: z.string().optional(),
     data_nascimento: z.string().optional(),
-    perfil: z.enum(['Admin', 'Gerente', 'Colaborador']),
+    perfil: z.enum(['Administrador', 'Coordenador de Projetos', 'Produção']),
     tipo: z.enum(['Geral', 'Terceirizado']),
     ativo: z.boolean(),
     senha: z.string().optional(),
@@ -60,7 +62,7 @@ export function ColaboradorForm() {
         resolver: zodResolver(colaboradorSchema),
         defaultValues: {
             ativo: true,
-            perfil: 'Colaborador',
+            perfil: 'Produção',
             tipo: 'Geral',
             tipo_pix: '',
             chave_pix: '',
@@ -134,8 +136,8 @@ export function ColaboradorForm() {
                 const createData = {
                     nome: data.nome,
                     email: data.email,
-                    cpf: cpfLimpo,
-                    telefone: data.telefone,
+                    cpf: cpfLimpo && cpfLimpo.length === 11 ? cpfLimpo : undefined,
+                    telefone: data.telefone || undefined,
                     data_nascimento: data.data_nascimento || undefined,
                     perfil: data.perfil,
                     tipo: data.tipo,
@@ -389,20 +391,20 @@ export function ColaboradorForm() {
                                     </Label>
                                     <Select
                                         value={perfil}
-                                        onValueChange={(value) => setValue('perfil', value as 'Admin' | 'Gerente' | 'Colaborador')}
+                                        onValueChange={(value) => setValue('perfil', value as 'Administrador' | 'Coordenador de Projetos' | 'Produção')}
                                     >
                                         <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Selecione o perfil" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="Admin">
+                                            <SelectItem value="Administrador">
                                                 Administrador
                                             </SelectItem>
-                                            <SelectItem value="Gerente">
-                                                Gerente
+                                            <SelectItem value="Coordenador de Projetos">
+                                                Coordenador de Projetos
                                             </SelectItem>
-                                            <SelectItem value="Colaborador">
-                                                Colaborador
+                                            <SelectItem value="Produção">
+                                                Produção
                                             </SelectItem>
                                         </SelectContent>
                                     </Select>
