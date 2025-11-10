@@ -9,15 +9,17 @@ import {
     Settings,
     Building2,
     UserCog,
+    Shield,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useAuthStore } from '@/store/authStore';
 
 interface SidebarProps {
     className?: string;
 }
 
-const menuItems = [
+const baseMenuItems = [
     {
         title: 'Dashboard',
         icon: LayoutDashboard,
@@ -65,7 +67,22 @@ const menuItems = [
     },
 ];
 
+const adminMenuItems = [
+    {
+        title: 'Administração',
+        icon: Shield,
+        href: '/admin',
+    },
+];
+
 export function Sidebar({ className }: SidebarProps) {
+    const { isSystemAdmin, isAdminMode } = useAuthStore();
+
+    // Se estiver em modo administrativo, mostrar apenas menu de administração
+    // Caso contrário, mostrar menus normais (com ou sem área admin dependendo do contexto)
+    const menuItems = isAdminMode 
+        ? adminMenuItems  // Apenas menu de administração
+        : (isSystemAdmin ? [...baseMenuItems, ...adminMenuItems] : baseMenuItems);  // Menus normais + admin se for system admin
 
     return (
         <aside

@@ -10,13 +10,27 @@ export const apiClient = axios.create({
     },
 });
 
-// Interceptor de requisição - adiciona token
+// Interceptor de requisição - adiciona token e contexto
 apiClient.interceptors.request.use(
     (config: any) => {
         const token = localStorage.getItem('accessToken');
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+        
+        // Adicionar contexto se disponível (via store)
+        try {
+            const authStorage = localStorage.getItem('auth-storage');
+            if (authStorage) {
+                const authState = JSON.parse(authStorage);
+                if (authState?.state?.currentContext?.escritorioId && config.headers) {
+                    config.headers['X-Escritorio-Id'] = authState.state.currentContext.escritorioId.toString();
+                }
+            }
+        } catch (e) {
+            // Ignora erros ao acessar o storage
+        }
+        
         return config;
     },
     (error: any) => {
@@ -29,6 +43,14 @@ apiClient.interceptors.response.use(
     (response) => response,
     async (error: any) => {
         const originalRequest = error.config;
+
+        // Se erro 400 com mensagem de escritório não selecionado
+        if (error.response?.status === 400 && 
+            error.response?.data?.detail?.includes('Escritório não selecionado')) {
+            // Redirecionar para seleção de contexto
+            window.location.href = '/selecionar-contexto';
+            return Promise.reject(error);
+        }
 
         // Se erro 401 e não é retry, tenta refresh token
         if (error.response?.status === 401 && !originalRequest?._retry) {

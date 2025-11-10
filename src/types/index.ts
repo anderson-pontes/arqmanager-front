@@ -349,6 +349,7 @@ export interface User {
     escritorioAtual?: Escritorio; // Escritório selecionado
     escritorios: UserEscritorio[]; // Lista de escritórios do usuário
     foto?: string;
+    isSystemAdmin?: boolean;  // NOVO: Admin do sistema
 }
 
 export interface UserEscritorio {
@@ -359,11 +360,34 @@ export interface UserEscritorio {
     dataVinculo: string;
 }
 
+export interface EscritorioContextInfo {
+    id: number;
+    nome_fantasia: string;
+    razao_social: string;
+    cor: string;
+    perfil?: string | null;
+}
+
+export interface SetContextRequest {
+    escritorio_id?: number | null;  // null para área administrativa
+    perfil?: string | null;  // null para área administrativa
+}
+
+export interface SetContextResponse {
+    access_token: string;
+    escritorio_id?: number | null;
+    perfil?: string | null;
+    is_admin_mode: boolean;  // True quando está em modo administrativo
+}
+
 export interface AuthResponse {
     user: User;
-    accessToken: string;
-    refreshToken: string;
-    requiresEscritorioSelection: boolean; // Se precisa selecionar escritório
+    access_token: string;
+    refresh_token: string;
+    token_type: string;
+    requires_escritorio_selection: boolean;
+    is_system_admin: boolean;  // NOVO
+    available_escritorios: EscritorioContextInfo[];  // NOVO
 }
 
 // Tipos Financeiros

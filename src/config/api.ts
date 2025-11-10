@@ -12,6 +12,8 @@ export const API_ENDPOINTS = {
         logout: '/auth/logout',
         refresh: '/auth/refresh',
         resetPassword: '/auth/reset-password',
+        setContext: '/auth/set-context',
+        availableEscritorios: '/auth/available-escritorios',
     },
     // Clientes
     clientes: {
@@ -67,6 +69,24 @@ export const API_ENDPOINTS = {
         update: '/escritorio',
         servicos: '/escritorio/servicos',
         configuracoes: '/escritorio/configuracoes',
+    },
+    // Administração (apenas admin do sistema)
+    admin: {
+        escritorios: {
+            list: '/escritorios',
+            detail: (id: number) => `/escritorios/${id}`,
+            create: '/escritorios',
+            update: (id: number) => `/escritorios/${id}`,
+            delete: (id: number) => `/escritorios/${id}`,
+        },
+        systemAdmins: {
+            list: '/admin/system-admins',
+            create: '/admin/system-admin',
+        },
+        escritorioAdmins: {
+            list: (escritorioId: number) => `/admin/escritorio-admins/${escritorioId}`,
+            create: (escritorioId: number) => `/admin/escritorio-admin/${escritorioId}`,
+        },
     },
     // Dashboard
     dashboard: {

@@ -26,7 +26,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export function Login() {
     const navigate = useNavigate();
-    const { setAuth } = useAuthStore();
+    const { setAuth, setContext } = useAuthStore();
     const [loading, setLoading] = useState(false);
 
     const {
@@ -56,9 +56,20 @@ export function Login() {
                 nome: response.user.nome,
                 email: response.user.email,
                 perfil: response.user.perfil || 'Colaborador',
-                escritorioId: response.user.escritorio_id,
-                escritorios: [], // TODO: Backend precisa retornar lista de escritórios
+                escritorios: response.available_escritorios.map(e => ({
+                    id: e.id,
+                    escritorio: {
+                        id: e.id,
+                        nomeFantasia: e.nome_fantasia,
+                        razaoSocial: e.razao_social,
+                        cor: e.cor
+                    },
+                    perfil: e.perfil || 'Colaborador',
+                    ativo: true,
+                    dataVinculo: new Date().toISOString()
+                })),
                 foto: response.user.foto,
+                isSystemAdmin: response.is_system_admin,
             };
 
             // Salva usuário no store
@@ -66,13 +77,29 @@ export function Login() {
                 user,
                 response.access_token,
                 response.refresh_token,
-                false // Por enquanto não tem seleção de escritório
+                response.requires_escritorio_selection,
+                response.is_system_admin
             );
 
             toast.success(`Bem-vindo, ${user.nome}!`);
 
-            console.log('🚀 Redirecionando para dashboard...');
-            navigate('/dashboard');
+            // Redirecionar baseado no contexto
+            if (response.requires_escritorio_selection || response.is_system_admin) {
+                console.log('🚀 Redirecionando para seleção de contexto...');
+                navigate('/selecionar-contexto');
+            } else {
+                // Usuário comum com 1 escritório: definir automaticamente
+                if (user.escritorios.length === 1) {
+                    const escritorio = user.escritorios[0];
+                    try {
+                        await setContext(escritorio.escritorio.id, escritorio.perfil);
+                    } catch (error) {
+                        console.error('Erro ao definir contexto automático:', error);
+                    }
+                }
+                console.log('🚀 Redirecionando para dashboard...');
+                navigate('/dashboard');
+            }
         } catch (error: any) {
             console.error('❌ Erro no login:', error);
 

@@ -3,6 +3,7 @@ import { Layout } from '@/components/layout/Layout';
 import { PrivateRoute } from './PrivateRoute';
 import { Login } from '@/pages/auth/Login';
 import { SelecionarEscritorio } from '@/pages/auth/SelecionarEscritorio';
+import { SelecionarContexto } from '@/pages/auth/SelecionarContexto';
 import { Dashboard } from '@/pages/dashboard/Dashboard';
 import { ColaboradoresList } from '@/pages/colaboradores/ColaboradoresList';
 import { ColaboradorForm } from '@/pages/colaboradores/ColaboradorForm';
@@ -29,6 +30,7 @@ import { ProjetoForm } from '@/pages/projetos/ProjetoForm';
 import { PropostasList } from '@/pages/propostas/PropostasList';
 import { PropostaDetail } from '@/pages/propostas/PropostaDetail';
 import { PropostaForm } from '@/pages/propostas/PropostaForm';
+import { AdminPage } from '@/pages/admin/AdminPage';
 import TestIntegration from '@/pages/TestIntegration';
 
 export const router = createBrowserRouter([
@@ -45,6 +47,14 @@ export const router = createBrowserRouter([
         element: (
             <PrivateRoute>
                 <SelecionarEscritorio />
+            </PrivateRoute>
+        ),
+    },
+    {
+        path: '/selecionar-contexto',
+        element: (
+            <PrivateRoute>
+                <SelecionarContexto />
             </PrivateRoute>
         ),
     },
@@ -155,6 +165,10 @@ export const router = createBrowserRouter([
             {
                 path: 'configuracoes',
                 element: <ConfiguracoesPage />,
+            },
+            {
+                path: 'admin',
+                element: <AdminPage />,
             },
             {
                 path: 'projetos',

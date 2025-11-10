@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getInitials } from '@/utils/formatters';
 import { EscritorioSwitcher } from './EscritorioSwitcher';
+import { ContextSwitcher } from './ContextSwitcher';
 import logoSemNome from '@/assets/logosemnome.png';
 
 interface HeaderProps {
@@ -21,7 +22,7 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
-    const { user, clearAuth } = useAuthStore();
+    const { user, clearAuth, isAdminMode } = useAuthStore();
     const navigate = useNavigate();
 
     const handleLogout = async () => {
@@ -64,22 +65,27 @@ export function Header({ onMenuClick }: HeaderProps) {
                     </span>
                 </div>
 
-                {/* Search - Centralizado (oculto em telas muito pequenas) */}
-                <div className="hidden md:flex flex-1 justify-center px-4">
-                    <div className="relative w-full max-w-md">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="search"
-                            placeholder="Buscar projetos, clientes..."
-                            className="pl-8 w-full"
-                        />
+                {/* Search - Centralizado (oculto em telas muito pequenas e em modo admin) */}
+                {!isAdminMode && (
+                    <div className="hidden md:flex flex-1 justify-center px-4">
+                        <div className="relative w-full max-w-md">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                type="search"
+                                placeholder="Buscar projetos, clientes..."
+                                className="pl-8 w-full"
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
+                
+                {/* Espaçador quando em modo admin (para centralizar elementos à direita) */}
+                {isAdminMode && <div className="flex-1" />}
 
                 {/* Right Actions - Alinhado à direita */}
                 <div className="flex items-center gap-2 shrink-0">
-                    {/* Escritório Switcher */}
-                    <EscritorioSwitcher />
+                    {/* Context Switcher (substitui EscritorioSwitcher) */}
+                    <ContextSwitcher />
 
                     {/* Notifications */}
                     <Button variant="ghost" size="icon" className="relative">
