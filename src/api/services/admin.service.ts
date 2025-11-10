@@ -5,10 +5,20 @@ import type { Escritorio, User } from '@/types';
 export interface CreateEscritorioRequest {
     nome_fantasia: string;
     razao_social: string;
-    documento: string;
+    documento?: string | null;  // CNPJ opcional
+    cpf?: string | null;  // CPF opcional
     email: string;
     telefone?: string;
+    // Endereço completo (mantido para compatibilidade)
     endereco?: string;
+    // Campos de endereço separados
+    logradouro?: string;
+    numero?: string;
+    complemento?: string;
+    bairro?: string;
+    cidade?: string;
+    uf?: string;
+    cep?: string;
     cor?: string;
 }
 
@@ -38,10 +48,18 @@ export const adminService = {
             id: e.id,
             nomeFantasia: e.nome_fantasia || e.nomeFantasia,
             razaoSocial: e.razao_social || e.razaoSocial,
-            documento: e.documento,
+            documento: e.documento || null,
+            cpf: e.cpf || null,
             email: e.email,
             telefone: e.telefone || null,
             endereco: e.endereco || null,
+            logradouro: e.logradouro || null,
+            numero: e.numero || null,
+            complemento: e.complemento || null,
+            bairro: e.bairro || null,
+            cidade: e.cidade || null,
+            uf: e.uf || null,
+            cep: e.cep || null,
             cor: e.cor || '#6366f1',
             ativo: e.ativo !== undefined ? e.ativo : true,
             created_at: e.created_at,
@@ -57,10 +75,18 @@ export const adminService = {
             id: e.id,
             nomeFantasia: e.nome_fantasia || e.nomeFantasia,
             razaoSocial: e.razao_social || e.razaoSocial,
-            documento: e.documento,
+            documento: e.documento || null,
+            cpf: e.cpf || null,
             email: e.email,
             telefone: e.telefone || null,
             endereco: e.endereco || null,
+            logradouro: e.logradouro || null,
+            numero: e.numero || null,
+            complemento: e.complemento || null,
+            bairro: e.bairro || null,
+            cidade: e.cidade || null,
+            uf: e.uf || null,
+            cep: e.cep || null,
             cor: e.cor || '#6366f1',
             ativo: e.ativo !== undefined ? e.ativo : true,
             created_at: e.created_at,
@@ -80,10 +106,18 @@ export const adminService = {
                 id: data.escritorio.id,
                 nomeFantasia: data.escritorio.nome_fantasia || data.escritorio.nomeFantasia,
                 razaoSocial: data.escritorio.razao_social || data.escritorio.razaoSocial,
-                documento: data.escritorio.documento,
+                documento: data.escritorio.documento || null,
+                cpf: data.escritorio.cpf || null,
                 email: data.escritorio.email,
                 telefone: data.escritorio.telefone || null,
                 endereco: data.escritorio.endereco || null,
+                logradouro: data.escritorio.logradouro || null,
+                numero: data.escritorio.numero || null,
+                complemento: data.escritorio.complemento || null,
+                bairro: data.escritorio.bairro || null,
+                cidade: data.escritorio.cidade || null,
+                uf: data.escritorio.uf || null,
+                cep: data.escritorio.cep || null,
                 cor: data.escritorio.cor || '#6366f1',
                 ativo: data.escritorio.ativo !== undefined ? data.escritorio.ativo : true,
                 created_at: data.escritorio.created_at,
@@ -101,10 +135,18 @@ export const adminService = {
             id: e.id,
             nomeFantasia: e.nome_fantasia || e.nomeFantasia,
             razaoSocial: e.razao_social || e.razaoSocial,
-            documento: e.documento,
+            documento: e.documento || null,
+            cpf: e.cpf || null,
             email: e.email,
             telefone: e.telefone || null,
             endereco: e.endereco || null,
+            logradouro: e.logradouro || null,
+            numero: e.numero || null,
+            complemento: e.complemento || null,
+            bairro: e.bairro || null,
+            cidade: e.cidade || null,
+            uf: e.uf || null,
+            cep: e.cep || null,
             cor: e.cor || '#6366f1',
             ativo: e.ativo !== undefined ? e.ativo : true,
             created_at: e.created_at,
@@ -120,10 +162,18 @@ export const adminService = {
             id: e.id,
             nomeFantasia: e.nome_fantasia || e.nomeFantasia,
             razaoSocial: e.razao_social || e.razaoSocial,
-            documento: e.documento,
+            documento: e.documento || null,
+            cpf: e.cpf || null,
             email: e.email,
             telefone: e.telefone || null,
             endereco: e.endereco || null,
+            logradouro: e.logradouro || null,
+            numero: e.numero || null,
+            complemento: e.complemento || null,
+            bairro: e.bairro || null,
+            cidade: e.cidade || null,
+            uf: e.uf || null,
+            cep: e.cep || null,
             cor: e.cor || '#6366f1',
             ativo: e.ativo !== undefined ? e.ativo : true,
             created_at: e.created_at,

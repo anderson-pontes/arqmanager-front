@@ -103,8 +103,13 @@ export const formatPhone = (phone: string | null | undefined): string => {
     return phone;
 };
 
-export const formatCEP = (cep: string): string => {
-    return cep.replace(/(\d{5})(\d{3})/, '$1-$2');
+export const formatCEP = (cep: string | null | undefined): string => {
+    if (!cep) return '';
+    const cleaned = cep.replace(/\D/g, '');
+    if (cleaned.length === 8) {
+        return cleaned.replace(/(\d{5})(\d{3})/, '$1-$2');
+    }
+    return cep;
 };
 
 export const formatFileSize = (bytes: number): string => {

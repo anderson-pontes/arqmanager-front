@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Users, Building2, Mail, Phone, Edit, Trash2, Power, X } from 'lucide-react';
+import { Plus, Users, Building2, Mail, Phone, Edit, Trash2, Power, X, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { adminService, type CreateAdminRequest } from '@/api/services/admin.service';
 import type { User, Escritorio } from '@/types';
 import { toast } from 'sonner';
@@ -20,6 +21,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export function EscritorioAdminsTab() {
+    const navigate = useNavigate();
     const [escritorios, setEscritorios] = useState<Escritorio[]>([]);
     const [selectedEscritorio, setSelectedEscritorio] = useState<number | null>(null);
     const [admins, setAdmins] = useState<User[]>([]);
@@ -241,6 +243,15 @@ export function EscritorioAdminsTab() {
                                                 </span>
                                             </div>
                                             <div className="flex flex-col gap-2 pt-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="w-full"
+                                                    onClick={() => navigate(`/admin/escritorios/${selectedEscritorio}/admins/${admin.id}`)}
+                                                >
+                                                    <Eye className="h-4 w-4 mr-1" />
+                                                    Visualizar
+                                                </Button>
                                                 <Button
                                                     variant="outline"
                                                     size="sm"

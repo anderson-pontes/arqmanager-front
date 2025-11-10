@@ -21,10 +21,20 @@ export interface Escritorio {
     id: number;
     nomeFantasia: string;
     razaoSocial: string;
-    documento: string;
+    documento?: string | null;  // CNPJ opcional
+    cpf?: string | null;  // CPF opcional
     email: string;
     telefone?: string | null;
+    // Endereço completo (mantido para compatibilidade)
     endereco?: string | null;
+    // Campos de endereço separados
+    logradouro?: string | null;
+    numero?: string | null;
+    complemento?: string | null;
+    bairro?: string | null;
+    cidade?: string | null;
+    uf?: string | null;
+    cep?: string | null;
     cor: string;
     ativo: boolean;
     created_at?: string;

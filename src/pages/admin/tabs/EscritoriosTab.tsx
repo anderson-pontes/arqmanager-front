@@ -7,7 +7,6 @@ import { adminService, type CreateEscritorioRequest, type CreateAdminRequest } f
 import type { Escritorio } from '@/types';
 import { toast } from 'sonner';
 import { CreateEscritorioDialog } from '../dialogs/CreateEscritorioDialog';
-import { EditEscritorioDialog } from '../dialogs/EditEscritorioDialog';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -24,8 +23,6 @@ export function EscritoriosTab() {
     const [escritorios, setEscritorios] = useState<Escritorio[]>([]);
     const [loading, setLoading] = useState(true);
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
-    const [editDialogOpen, setEditDialogOpen] = useState(false);
-    const [escritorioToEdit, setEscritorioToEdit] = useState<Escritorio | null>(null);
     const [toggleDialogOpen, setToggleDialogOpen] = useState(false);
     const [escritorioToToggle, setEscritorioToToggle] = useState<Escritorio | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -64,22 +61,8 @@ export function EscritoriosTab() {
         }
     };
 
-    const handleEdit = async (id: number, data: Partial<CreateEscritorioRequest>) => {
-        try {
-            const updated = await adminService.updateEscritorio(id, data);
-            toast.success('Escritório atualizado com sucesso!');
-            setEditDialogOpen(false);
-            setEscritorioToEdit(null);
-            // Atualizar o escritório na lista localmente
-            setEscritorios((prev) =>
-                prev.map((e) => (e.id === id ? updated : e))
-            );
-        } catch (error: any) {
-            toast.error('Erro ao atualizar escritório', {
-                description: error.response?.data?.detail || error.message,
-            });
-            throw error;
-        }
+    const handleEdit = (escritorio: Escritorio) => {
+        navigate(`/admin/escritorios/${escritorio.id}/editar`);
     };
 
     const handleToggle = async () => {
@@ -198,10 +181,7 @@ export function EscritoriosTab() {
                                         variant="outline"
                                         size="sm"
                                         className="flex-1"
-                                        onClick={() => {
-                                            setEscritorioToEdit(escritorio);
-                                            setEditDialogOpen(true);
-                                        }}
+                                        onClick={() => handleEdit(escritorio)}
                                     >
                                         <Edit className="h-4 w-4 mr-1" />
                                         Editar
@@ -256,13 +236,6 @@ export function EscritoriosTab() {
                 open={createDialogOpen}
                 onOpenChange={setCreateDialogOpen}
                 onSubmit={handleCreate}
-            />
-
-            <EditEscritorioDialog
-                open={editDialogOpen}
-                onOpenChange={setEditDialogOpen}
-                escritorio={escritorioToEdit}
-                onSubmit={handleEdit}
             />
 
             <AlertDialog open={toggleDialogOpen} onOpenChange={setToggleDialogOpen}>

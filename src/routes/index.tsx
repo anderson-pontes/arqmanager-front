@@ -32,6 +32,9 @@ import { PropostaDetail } from '@/pages/propostas/PropostaDetail';
 import { PropostaForm } from '@/pages/propostas/PropostaForm';
 import { AdminPage } from '@/pages/admin/AdminPage';
 import { ViewEscritorioPage } from '@/pages/admin/ViewEscritorioPage';
+import { EditEscritorioPage } from '@/pages/admin/EditEscritorioPage';
+import { ViewSystemAdminPage } from '@/pages/admin/ViewSystemAdminPage';
+import { ViewEscritorioAdminPage } from '@/pages/admin/ViewEscritorioAdminPage';
 import TestIntegration from '@/pages/TestIntegration';
 
 export const router = createBrowserRouter([
@@ -174,6 +177,18 @@ export const router = createBrowserRouter([
             {
                 path: 'admin/escritorios/:id',
                 element: <ViewEscritorioPage />,
+            },
+            {
+                path: 'admin/escritorios/:id/editar',
+                element: <EditEscritorioPage />,
+            },
+            {
+                path: 'admin/system-admins/:id',
+                element: <ViewSystemAdminPage />,
+            },
+            {
+                path: 'admin/escritorios/:escritorioId/admins/:id',
+                element: <ViewEscritorioAdminPage />,
             },
             {
                 path: 'projetos',

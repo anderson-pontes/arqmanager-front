@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, UserCog, Mail, Phone, Edit, Trash2, Power, X } from 'lucide-react';
+import { Plus, UserCog, Mail, Phone, Edit, Trash2, Power, X, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { adminService, type CreateAdminRequest } from '@/api/services/admin.service';
 import type { User } from '@/types';
 import { toast } from 'sonner';
@@ -20,6 +21,7 @@ import {
 import { useAuthStore } from '@/store/authStore';
 
 export function SystemAdminsTab() {
+    const navigate = useNavigate();
     const { user: currentUser } = useAuthStore();
     const [admins, setAdmins] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
@@ -198,6 +200,15 @@ export function SystemAdminsTab() {
                                 </span>
                             </div>
                             <div className="flex flex-col gap-2 pt-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="w-full"
+                                    onClick={() => navigate(`/admin/system-admins/${admin.id}`)}
+                                >
+                                    <Eye className="h-4 w-4 mr-1" />
+                                    Visualizar
+                                </Button>
                                 <Button
                                     variant="outline"
                                     size="sm"

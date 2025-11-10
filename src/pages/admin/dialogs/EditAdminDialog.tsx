@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { maskPhone, maskCPF, unmask } from '@/utils/masks';
+import { formatPhone, formatCPF } from '@/utils/formatters';
 import {
     Dialog,
     DialogContent,
@@ -34,12 +36,31 @@ export function EditAdminDialog({
     const [telefone, setTelefone] = useState('');
 
     useEffect(() => {
-        if (admin) {
+        if (admin && open) {
             setNome(admin.nome || '');
             setEmail(admin.email || '');
             setSenha('');
-            setCpf(admin.cpf || '');
-            setTelefone(admin.telefone || '');
+            // Formatar CPF ao carregar
+            const cpfValue = admin.cpf;
+            if (cpfValue && cpfValue.trim() && cpfValue !== '-') {
+                // Se já está formatado, usar diretamente, senão formatar
+                const cpfFormatted = cpfValue.includes('.') || cpfValue.includes('-') 
+                    ? cpfValue 
+                    : formatCPF(cpfValue);
+                setCpf(cpfFormatted !== '-' ? cpfFormatted : '');
+            } else {
+                setCpf('');
+            }
+            // Formatar telefone ao carregar
+            const telefoneValue = admin.telefone || '';
+            setTelefone(telefoneValue ? formatPhone(telefoneValue) : '');
+        } else if (!open) {
+            // Reset quando fechar
+            setNome('');
+            setEmail('');
+            setSenha('');
+            setCpf('');
+            setTelefone('');
         }
     }, [admin, open]);
 
@@ -60,13 +81,13 @@ export function EditAdminDialog({
             }
             
             if (cpf && cpf.trim()) {
-                data.cpf = cpf.trim();
+                data.cpf = unmask(cpf.trim());
             } else {
                 data.cpf = undefined;
             }
             
             if (telefone && telefone.trim()) {
-                data.telefone = telefone.trim();
+                data.telefone = unmask(telefone.trim());
             } else {
                 data.telefone = undefined;
             }
@@ -132,8 +153,9 @@ export function EditAdminDialog({
                             <Input
                                 id="cpf"
                                 value={cpf}
-                                onChange={(e) => setCpf(e.target.value)}
+                                onChange={(e) => setCpf(maskCPF(e.target.value))}
                                 placeholder="000.000.000-00"
+                                maxLength={14}
                             />
                         </div>
                         <div className="space-y-2">
@@ -141,8 +163,9 @@ export function EditAdminDialog({
                             <Input
                                 id="telefone"
                                 value={telefone}
-                                onChange={(e) => setTelefone(e.target.value)}
+                                onChange={(e) => setTelefone(maskPhone(e.target.value))}
                                 placeholder="(00) 00000-0000"
+                                maxLength={15}
                             />
                         </div>
                     </div>

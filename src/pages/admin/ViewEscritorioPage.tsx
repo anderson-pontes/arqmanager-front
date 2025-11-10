@@ -6,10 +6,11 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { adminService } from '@/api/services/admin.service';
 import type { Escritorio } from '@/types';
-import { Building2, Mail, Phone, MapPin, Calendar, Palette, ArrowLeft, Loader2 } from 'lucide-react';
+import { Building2, Mail, Phone, MapPin, Calendar, Palette, ArrowLeft, Loader2, Edit } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { formatCNPJ, formatCPF, formatPhone, formatCEP } from '@/utils/formatters';
 
 export function ViewEscritorioPage() {
     const { id } = useParams<{ id: string }>();
@@ -96,6 +97,12 @@ export function ViewEscritorioPage() {
                         </div>
                     </div>
                 </div>
+                <Button
+                    onClick={() => navigate(`/admin/escritorios/${escritorio.id}/editar`)}
+                >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Editar Escritório
+                </Button>
             </div>
 
             {/* Status */}
@@ -124,10 +131,22 @@ export function ViewEscritorioPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-1">
-                            <p className="text-sm font-medium text-muted-foreground">CNPJ</p>
-                            <p className="text-base font-medium">{escritorio.documento}</p>
-                        </div>
+                        {escritorio.documento && (
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-muted-foreground">CNPJ</p>
+                                <p className="text-base font-medium">
+                                    {formatCNPJ(escritorio.documento) !== '-' ? formatCNPJ(escritorio.documento) : escritorio.documento}
+                                </p>
+                            </div>
+                        )}
+                        {escritorio.cpf && (
+                            <div className="space-y-1">
+                                <p className="text-sm font-medium text-muted-foreground">CPF</p>
+                                <p className="text-base font-medium">
+                                    {formatCPF(escritorio.cpf) !== '-' ? formatCPF(escritorio.cpf) : escritorio.cpf}
+                                </p>
+                            </div>
+                        )}
                         <div className="space-y-1">
                             <p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                                 <Mail className="h-4 w-4" />
@@ -141,7 +160,7 @@ export function ViewEscritorioPage() {
                                     <Phone className="h-4 w-4" />
                                     Telefone
                                 </p>
-                                <p className="text-base font-medium">{escritorio.telefone}</p>
+                                <p className="text-base font-medium">{formatPhone(escritorio.telefone)}</p>
                             </div>
                         )}
                         <div className="space-y-1">
@@ -162,7 +181,7 @@ export function ViewEscritorioPage() {
             </Card>
 
             {/* Endereço */}
-            {escritorio.endereco && (
+            {(escritorio.logradouro || escritorio.cep || escritorio.endereco) && (
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
@@ -171,7 +190,45 @@ export function ViewEscritorioPage() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-base">{escritorio.endereco}</p>
+                        {escritorio.logradouro || escritorio.cep ? (
+                            <div className="space-y-3">
+                                {escritorio.logradouro && (
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-medium text-muted-foreground">Logradouro</p>
+                                        <p className="text-base">
+                                            {escritorio.logradouro}
+                                            {escritorio.numero && `, ${escritorio.numero}`}
+                                            {escritorio.complemento && ` - ${escritorio.complemento}`}
+                                        </p>
+                                    </div>
+                                )}
+                                {escritorio.bairro && (
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-medium text-muted-foreground">Bairro</p>
+                                        <p className="text-base">{escritorio.bairro}</p>
+                                    </div>
+                                )}
+                                {(escritorio.cidade || escritorio.uf) && (
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-medium text-muted-foreground">Cidade/UF</p>
+                                        <p className="text-base">
+                                            {escritorio.cidade}
+                                            {escritorio.uf && ` - ${escritorio.uf}`}
+                                        </p>
+                                    </div>
+                                )}
+                                {escritorio.cep && (
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-medium text-muted-foreground">CEP</p>
+                                        <p className="text-base">
+                                            {formatCEP(escritorio.cep) || escritorio.cep}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        ) : escritorio.endereco ? (
+                            <p className="text-base">{escritorio.endereco}</p>
+                        ) : null}
                     </CardContent>
                 </Card>
             )}

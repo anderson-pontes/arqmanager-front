@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { maskPhone, maskCPF, unmask } from '@/utils/masks';
 import {
     Dialog,
     DialogContent,
@@ -45,8 +46,8 @@ export function CreateAdminDialog({
                 nome,
                 email,
                 senha,
-                cpf: cpf && cpf.trim() ? cpf.trim() : undefined,
-                telefone: telefone && telefone.trim() ? telefone.trim() : undefined,
+                cpf: cpf && cpf.trim() ? unmask(cpf.trim()) : undefined,
+                telefone: telefone && telefone.trim() ? unmask(telefone.trim()) : undefined,
             };
 
             await onSubmit(adminData);
@@ -122,8 +123,9 @@ export function CreateAdminDialog({
                         <Input
                             id="cpf"
                             value={cpf}
-                            onChange={(e) => setCpf(e.target.value)}
+                            onChange={(e) => setCpf(maskCPF(e.target.value))}
                             placeholder="000.000.000-00"
+                            maxLength={14}
                         />
                     </div>
 
@@ -132,8 +134,9 @@ export function CreateAdminDialog({
                         <Input
                             id="telefone"
                             value={telefone}
-                            onChange={(e) => setTelefone(e.target.value)}
+                            onChange={(e) => setTelefone(maskPhone(e.target.value))}
                             placeholder="(00) 00000-0000"
+                            maxLength={15}
                         />
                     </div>
                 </div>
