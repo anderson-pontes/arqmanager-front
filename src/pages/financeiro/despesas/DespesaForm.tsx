@@ -32,9 +32,10 @@ type DespesaFormData = z.infer<typeof despesaSchema>;
 
 interface DespesaFormProps {
     defaultContaId?: number;
+    backUrl?: string;
 }
 
-export function DespesaForm({ defaultContaId }: DespesaFormProps) {
+export function DespesaForm({ defaultContaId, backUrl }: DespesaFormProps) {
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -63,7 +64,7 @@ export function DespesaForm({ defaultContaId }: DespesaFormProps) {
         try {
             console.log('Despesa:', data);
             setTimeout(() => {
-                navigate('/financeiro/movimentacoes');
+                navigate(backUrl || '/financeiro/movimentacoes');
             }, 1000);
         } catch (error) {
             console.error('Erro ao salvar despesa:', error);
@@ -77,6 +78,8 @@ export function DespesaForm({ defaultContaId }: DespesaFormProps) {
             <PageHeader
                 title="Nova Despesa"
                 description="Cadastre uma nova despesa no sistema"
+                showBack={!!backUrl}
+                backUrl={backUrl}
             />
 
             <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
@@ -307,7 +310,7 @@ export function DespesaForm({ defaultContaId }: DespesaFormProps) {
                             />
 
                             <div className="flex justify-end gap-4">
-                                <Button type="button" variant="outline" onClick={() => navigate('/financeiro/movimentacoes')}>
+                                <Button type="button" variant="outline" onClick={() => navigate(backUrl || '/financeiro/movimentacoes')}>
                                     <X className="mr-2 h-4 w-4" />
                                     Cancelar
                                 </Button>

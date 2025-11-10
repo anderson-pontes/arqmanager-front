@@ -4,7 +4,8 @@ import { ReceitaForm } from '@/pages/financeiro/receitas/ReceitaForm';
 export function NovaReceitaContaPage() {
     const { id } = useParams();
     const contaId = Number(id);
-    return <ReceitaForm defaultContaId={Number.isFinite(contaId) ? contaId : undefined} />;
+    const backUrl = `/financeiro/contas/${id}`;
+    return <ReceitaForm defaultContaId={Number.isFinite(contaId) ? contaId : undefined} backUrl={backUrl} />;
 }
 
 

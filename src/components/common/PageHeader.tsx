@@ -8,6 +8,7 @@ interface PageHeaderProps {
     description?: string;
     action?: ReactNode;
     showBack?: boolean;
+    backUrl?: string;
 }
 
 export function PageHeader({
@@ -15,8 +16,17 @@ export function PageHeader({
     description,
     action,
     showBack = false,
+    backUrl,
 }: PageHeaderProps) {
     const navigate = useNavigate();
+
+    const handleBack = () => {
+        if (backUrl) {
+            navigate(backUrl);
+        } else {
+            navigate(-1);
+        }
+    };
 
     return (
         <div className="flex items-center justify-between mb-3">
@@ -25,7 +35,7 @@ export function PageHeader({
                     <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => navigate(-1)}
+                        onClick={handleBack}
                     >
                         <ArrowLeft className="h-5 w-5" />
                     </Button>

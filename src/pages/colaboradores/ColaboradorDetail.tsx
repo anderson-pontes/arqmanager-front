@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
@@ -22,34 +22,84 @@ import {
     Shield,
     KeyRound,
 } from 'lucide-react';
-import { mockColaboradores } from '@/data';
+import { colaboradoresService, type Colaborador } from '@/api/services/colaboradores.service';
 import { getInitials, formatPhone, formatCPF, formatDate } from '@/utils/formatters';
-import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { toast } from 'sonner';
+import { SkeletonCard } from '@/components/common/SkeletonCard';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 export function ColaboradorDetail() {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [colaborador, setColaborador] = useState<Colaborador | null>(null);
+    const [loading, setLoading] = useState(true);
     const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
+    const [newPassword, setNewPassword] = useState('');
 
-    const colaborador = mockColaboradores.find((c) => c.id === Number(id));
+    useEffect(() => {
+        if (id) {
+            fetchColaborador();
+        }
+    }, [id]);
+
+    const fetchColaborador = async () => {
+        try {
+            setLoading(true);
+            const data = await colaboradoresService.getById(Number(id));
+            setColaborador(data);
+        } catch (error: any) {
+            console.error('Erro ao buscar colaborador:', error);
+            toast.error('Erro ao carregar dados do colaborador');
+            navigate('/colaboradores');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleResetPassword = () => {
         setResetPasswordDialogOpen(true);
     };
 
     const confirmResetPassword = async () => {
-        try {
-            // TODO: Implementar chamada à API para resetar senha
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+        if (!id || !newPassword) {
+            toast.error('Por favor, informe a nova senha');
+            return;
+        }
 
-            toast.success('Senha resetada com sucesso! Um email foi enviado para o colaborador.');
+        if (newPassword.length < 6) {
+            toast.error('A senha deve ter no mínimo 6 caracteres');
+            return;
+        }
+
+        try {
+            await colaboradoresService.update(Number(id), { senha: newPassword });
+            toast.success(`Senha de ${colaborador?.nome} alterada com sucesso!`);
             setResetPasswordDialogOpen(false);
-        } catch (error) {
-            console.error('Erro ao resetar senha:', error);
-            toast.error('Erro ao resetar senha');
+            setNewPassword('');
+        } catch (error: any) {
+            console.error('Erro ao alterar senha:', error);
+            const errorMessage = error.response?.data?.detail || 'Erro ao alterar senha';
+            toast.error(errorMessage);
         }
     };
+
+    if (loading) {
+        return (
+            <div>
+                <PageHeader title="Detalhes do Colaborador" showBack />
+                <SkeletonCard lines={10} />
+            </div>
+        );
+    }
 
     if (!colaborador) {
         return (
@@ -113,7 +163,7 @@ export function ColaboradorDetail() {
                                     </h2>
                                     <div className="flex gap-2 mt-2">
                                         <Badge variant="outline">
-                                            {colaborador.perfil}
+                                            {colaborador.perfil || 'Colaborador'}
                                         </Badge>
                                         {colaborador.tipo && (
                                             <Badge
@@ -153,7 +203,7 @@ export function ColaboradorDetail() {
                                                 Telefone
                                             </p>
                                             <p className="font-medium">
-                                                {formatPhone(colaborador.telefone)}
+                                                {colaborador.telefone ? formatPhone(colaborador.telefone) : 'Não informado'}
                                             </p>
                                         </div>
                                     </div>
@@ -179,7 +229,7 @@ export function ColaboradorDetail() {
                                                 Data de Nascimento
                                             </p>
                                             <p className="font-medium">
-                                                {formatDate(colaborador.dataNascimento)}
+                                                {colaborador.data_nascimento ? formatDate(colaborador.data_nascimento) : 'Não informado'}
                                             </p>
                                         </div>
                                     </div>
@@ -198,28 +248,39 @@ export function ColaboradorDetail() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div>
-                            <p className="text-sm text-muted-foreground">Sócio</p>
-                            <Badge variant={colaborador.socio === 'sim' ? 'default' : 'secondary'}>
-                                {colaborador.socio === 'sim' ? 'Sim' : 'Não'}
-                            </Badge>
-                        </div>
-                        {colaborador.tipoPix && (
+                        {(colaborador.tipo_pix && colaborador.tipo_pix.trim() !== '') || 
+                         (colaborador.chave_pix && colaborador.chave_pix.trim() !== '') ? (
                             <>
-                                <Separator />
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Tipo PIX</p>
-                                    <p className="font-medium capitalize">
-                                        {colaborador.tipoPix === 'aleatoria' ? 'Chave Aleatória' : colaborador.tipoPix}
-                                    </p>
-                                </div>
+                                {colaborador.tipo_pix && (
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Tipo PIX</p>
+                                        <p className="font-medium capitalize">
+                                            {colaborador.tipo_pix === 'aleatoria' 
+                                                ? 'Chave Aleatória' 
+                                                : colaborador.tipo_pix === 'email'
+                                                ? 'Email'
+                                                : colaborador.tipo_pix === 'cpf'
+                                                ? 'CPF'
+                                                : colaborador.tipo_pix === 'cnpj'
+                                                ? 'CNPJ'
+                                                : colaborador.tipo_pix === 'telefone'
+                                                ? 'Telefone'
+                                                : colaborador.tipo_pix}
+                                        </p>
+                                    </div>
+                                )}
+                                {colaborador.chave_pix && (
+                                    <>
+                                        {colaborador.tipo_pix && <Separator />}
+                                        <div>
+                                            <p className="text-sm text-muted-foreground">Chave PIX</p>
+                                            <p className="font-medium break-all">{colaborador.chave_pix}</p>
+                                        </div>
+                                    </>
+                                )}
                             </>
-                        )}
-                        {colaborador.chavePix && (
-                            <div>
-                                <p className="text-sm text-muted-foreground">Chave PIX</p>
-                                <p className="font-medium">{colaborador.chavePix}</p>
-                            </div>
+                        ) : (
+                            <p className="text-sm text-muted-foreground">Nenhum dado bancário cadastrado</p>
                         )}
                     </CardContent>
                 </Card>
@@ -267,7 +328,7 @@ export function ColaboradorDetail() {
                                 </Badge>
                             )}
                         </div>
-                        {colaborador.ultimoAcesso && (
+                        {colaborador.ultimo_acesso && (
                             <>
                                 <Separator />
                                 <div>
@@ -275,7 +336,7 @@ export function ColaboradorDetail() {
                                         Último Acesso
                                     </p>
                                     <p className="font-medium">
-                                        {formatDate(colaborador.ultimoAcesso)}
+                                        {formatDate(colaborador.ultimo_acesso)}
                                     </p>
                                 </div>
                             </>
@@ -316,15 +377,60 @@ export function ColaboradorDetail() {
                 </Card>
             </div>
 
-            {/* Dialog de Confirmação para Resetar Senha */}
-            <ConfirmDialog
-                open={resetPasswordDialogOpen}
-                onOpenChange={setResetPasswordDialogOpen}
-                onConfirm={confirmResetPassword}
-                title="Resetar Senha"
-                description={`Tem certeza que deseja resetar a senha de ${colaborador.nome}? Um email será enviado com as instruções para criar uma nova senha.`}
-                confirmText="Resetar Senha"
-            />
+            {/* Dialog - Alterar Senha */}
+            <Dialog 
+                open={resetPasswordDialogOpen} 
+                onOpenChange={(open) => {
+                    setResetPasswordDialogOpen(open);
+                    if (!open) {
+                        setNewPassword('');
+                    }
+                }}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Alterar Senha</DialogTitle>
+                        <DialogDescription>
+                            Digite a nova senha para {colaborador?.nome || 'este colaborador'}. 
+                            A senha deve ter no mínimo 6 caracteres.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="newPassword">Nova Senha</Label>
+                            <Input
+                                id="newPassword"
+                                type="password"
+                                placeholder="Digite a nova senha"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter') {
+                                        confirmResetPassword();
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                setResetPasswordDialogOpen(false);
+                                setNewPassword('');
+                            }}
+                        >
+                            Cancelar
+                        </Button>
+                        <Button
+                            onClick={confirmResetPassword}
+                            disabled={!newPassword || newPassword.length < 6}
+                        >
+                            Alterar Senha
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

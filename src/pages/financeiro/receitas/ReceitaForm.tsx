@@ -31,9 +31,10 @@ interface ReceitaFormData {
 
 interface ReceitaFormProps {
     defaultContaId?: number;
+    backUrl?: string;
 }
 
-export function ReceitaForm({ defaultContaId }: ReceitaFormProps) {
+export function ReceitaForm({ defaultContaId, backUrl }: ReceitaFormProps) {
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -59,7 +60,7 @@ export function ReceitaForm({ defaultContaId }: ReceitaFormProps) {
             console.log('Receita:', data);
             await new Promise((resolve) => setTimeout(resolve, 1000));
             toast.success('Receita cadastrada com sucesso!');
-            navigate('/financeiro/movimentacoes');
+            navigate(backUrl || '/financeiro/movimentacoes');
         } catch (error) {
             console.error('Erro ao salvar receita:', error);
             toast.error('Erro ao salvar receita');
@@ -83,7 +84,12 @@ export function ReceitaForm({ defaultContaId }: ReceitaFormProps) {
 
     return (
         <div>
-            <PageHeader title="Nova Receita" description="Cadastre uma nova receita no sistema" />
+            <PageHeader 
+                title="Nova Receita" 
+                description="Cadastre uma nova receita no sistema" 
+                showBack={!!backUrl}
+                backUrl={backUrl}
+            />
 
             <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
                 <CardContent className="pt-6">
@@ -267,7 +273,7 @@ export function ReceitaForm({ defaultContaId }: ReceitaFormProps) {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => navigate('/financeiro/movimentacoes')}
+                                onClick={() => navigate(backUrl || '/financeiro/movimentacoes')}
                             >
                                 <X className="mr-2 h-4 w-4" />
                                 Cancelar

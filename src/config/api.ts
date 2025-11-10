@@ -48,10 +48,11 @@ export const API_ENDPOINTS = {
     },
     // Colaboradores
     colaboradores: {
-        list: '/colaboradores',
+        list: '/colaboradores/',
         detail: (id: number) => `/colaboradores/${id}`,
-        create: '/colaboradores',
+        create: '/colaboradores/',
         update: (id: number) => `/colaboradores/${id}`,
+        delete: (id: number) => `/colaboradores/${id}`,
     },
     // Financeiro
     financeiro: {

@@ -91,7 +91,8 @@ export const formatCNPJ = (cnpj: string | null | undefined): string => {
     );
 };
 
-export const formatPhone = (phone: string): string => {
+export const formatPhone = (phone: string | null | undefined): string => {
+    if (!phone) return '';
     const cleaned = phone.replace(/\D/g, '');
     if (cleaned.length === 11) {
         return cleaned.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');

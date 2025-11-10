@@ -4,7 +4,8 @@ import { DespesaForm } from '@/pages/financeiro/despesas/DespesaForm';
 export function NovaDespesaContaPage() {
     const { id } = useParams();
     const contaId = Number(id);
-    return <DespesaForm defaultContaId={Number.isFinite(contaId) ? contaId : undefined} />;
+    const backUrl = `/financeiro/contas/${id}`;
+    return <DespesaForm defaultContaId={Number.isFinite(contaId) ? contaId : undefined} backUrl={backUrl} />;
 }
 
 
