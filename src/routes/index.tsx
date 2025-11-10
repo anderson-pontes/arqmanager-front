@@ -31,6 +31,7 @@ import { PropostasList } from '@/pages/propostas/PropostasList';
 import { PropostaDetail } from '@/pages/propostas/PropostaDetail';
 import { PropostaForm } from '@/pages/propostas/PropostaForm';
 import { AdminPage } from '@/pages/admin/AdminPage';
+import { ViewEscritorioPage } from '@/pages/admin/ViewEscritorioPage';
 import TestIntegration from '@/pages/TestIntegration';
 
 export const router = createBrowserRouter([
@@ -169,6 +170,10 @@ export const router = createBrowserRouter([
             {
                 path: 'admin',
                 element: <AdminPage />,
+            },
+            {
+                path: 'admin/escritorios/:id',
+                element: <ViewEscritorioPage />,
             },
             {
                 path: 'projetos',

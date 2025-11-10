@@ -32,26 +32,103 @@ export interface CreateEscritorioWithAdminResponse {
 export const adminService = {
     // Escritórios (endpoints em /escritorios mas requerem admin do sistema)
     async listEscritorios(params?: { skip?: number; limit?: number; ativo?: boolean }) {
-        const response = await apiClient.get<Escritorio[]>(API_ENDPOINTS.admin.escritorios.list, { params });
-        return response.data;
+        const response = await apiClient.get<any[]>(API_ENDPOINTS.admin.escritorios.list, { params });
+        // Converter snake_case para camelCase
+        return response.data.map((e: any) => ({
+            id: e.id,
+            nomeFantasia: e.nome_fantasia || e.nomeFantasia,
+            razaoSocial: e.razao_social || e.razaoSocial,
+            documento: e.documento,
+            email: e.email,
+            telefone: e.telefone || null,
+            endereco: e.endereco || null,
+            cor: e.cor || '#6366f1',
+            ativo: e.ativo !== undefined ? e.ativo : true,
+            created_at: e.created_at,
+            updated_at: e.updated_at,
+        }));
     },
 
     async getEscritorio(id: number) {
-        const response = await apiClient.get<Escritorio>(API_ENDPOINTS.admin.escritorios.detail(id));
-        return response.data;
+        const response = await apiClient.get<any>(API_ENDPOINTS.admin.escritorios.detail(id));
+        const e = response.data;
+        // Converter snake_case para camelCase
+        return {
+            id: e.id,
+            nomeFantasia: e.nome_fantasia || e.nomeFantasia,
+            razaoSocial: e.razao_social || e.razaoSocial,
+            documento: e.documento,
+            email: e.email,
+            telefone: e.telefone || null,
+            endereco: e.endereco || null,
+            cor: e.cor || '#6366f1',
+            ativo: e.ativo !== undefined ? e.ativo : true,
+            created_at: e.created_at,
+            updated_at: e.updated_at,
+        };
     },
 
     async createEscritorioWithAdmin(escritorioData: CreateEscritorioRequest, adminData: CreateAdminRequest) {
-        const response = await apiClient.post<CreateEscritorioWithAdminResponse>(
+        const response = await apiClient.post<any>(
             API_ENDPOINTS.admin.escritorios.create,
             { escritorio_data: escritorioData, admin_data: adminData }
         );
-        return response.data;
+        const data = response.data;
+        // Converter snake_case para camelCase
+        return {
+            escritorio: {
+                id: data.escritorio.id,
+                nomeFantasia: data.escritorio.nome_fantasia || data.escritorio.nomeFantasia,
+                razaoSocial: data.escritorio.razao_social || data.escritorio.razaoSocial,
+                documento: data.escritorio.documento,
+                email: data.escritorio.email,
+                telefone: data.escritorio.telefone || null,
+                endereco: data.escritorio.endereco || null,
+                cor: data.escritorio.cor || '#6366f1',
+                ativo: data.escritorio.ativo !== undefined ? data.escritorio.ativo : true,
+                created_at: data.escritorio.created_at,
+                updated_at: data.escritorio.updated_at,
+            },
+            admin: data.admin,
+        };
     },
 
     async updateEscritorio(id: number, data: Partial<CreateEscritorioRequest>) {
-        const response = await apiClient.put<Escritorio>(API_ENDPOINTS.admin.escritorios.update(id), data);
-        return response.data;
+        const response = await apiClient.put<any>(API_ENDPOINTS.admin.escritorios.update(id), data);
+        const e = response.data;
+        // Converter snake_case para camelCase
+        return {
+            id: e.id,
+            nomeFantasia: e.nome_fantasia || e.nomeFantasia,
+            razaoSocial: e.razao_social || e.razaoSocial,
+            documento: e.documento,
+            email: e.email,
+            telefone: e.telefone || null,
+            endereco: e.endereco || null,
+            cor: e.cor || '#6366f1',
+            ativo: e.ativo !== undefined ? e.ativo : true,
+            created_at: e.created_at,
+            updated_at: e.updated_at,
+        };
+    },
+
+    async toggleEscritorioActive(id: number) {
+        const response = await apiClient.patch<any>(API_ENDPOINTS.admin.escritorios.toggleActive(id));
+        const e = response.data;
+        // Converter snake_case para camelCase
+        return {
+            id: e.id,
+            nomeFantasia: e.nome_fantasia || e.nomeFantasia,
+            razaoSocial: e.razao_social || e.razaoSocial,
+            documento: e.documento,
+            email: e.email,
+            telefone: e.telefone || null,
+            endereco: e.endereco || null,
+            cor: e.cor || '#6366f1',
+            ativo: e.ativo !== undefined ? e.ativo : true,
+            created_at: e.created_at,
+            updated_at: e.updated_at,
+        };
     },
 
     async deleteEscritorio(id: number) {
@@ -84,6 +161,32 @@ export const adminService = {
         return response.data;
     },
 
+    async updateSystemAdmin(userId: number, data: Partial<CreateAdminRequest> & { senha?: string }) {
+        const cleanData: any = {};
+        
+        if (data.nome) cleanData.nome = data.nome;
+        if (data.email) cleanData.email = data.email;
+        if (data.senha) cleanData.senha = data.senha;
+        if (data.cpf !== undefined) {
+            cleanData.cpf = data.cpf && data.cpf.trim() ? data.cpf.trim() : null;
+        }
+        if (data.telefone !== undefined) {
+            cleanData.telefone = data.telefone && data.telefone.trim() ? data.telefone.trim() : null;
+        }
+        
+        const response = await apiClient.put<User>(API_ENDPOINTS.admin.systemAdmins.update(userId), cleanData);
+        return response.data;
+    },
+
+    async toggleSystemAdminActive(userId: number) {
+        const response = await apiClient.patch<User>(API_ENDPOINTS.admin.systemAdmins.toggleActive(userId));
+        return response.data;
+    },
+
+    async deleteSystemAdmin(userId: number) {
+        await apiClient.delete(API_ENDPOINTS.admin.systemAdmins.delete(userId));
+    },
+
     // Administradores de Escritório
     async listEscritorioAdmins(escritorioId: number, params?: { skip?: number; limit?: number }) {
         const response = await apiClient.get<User[]>(
@@ -114,6 +217,37 @@ export const adminService = {
             cleanData
         );
         return response.data;
+    },
+
+    async updateEscritorioAdmin(escritorioId: number, userId: number, data: Partial<CreateAdminRequest> & { senha?: string }) {
+        const cleanData: any = {};
+        
+        if (data.nome) cleanData.nome = data.nome;
+        if (data.email) cleanData.email = data.email;
+        if (data.senha) cleanData.senha = data.senha;
+        if (data.cpf !== undefined) {
+            cleanData.cpf = data.cpf && data.cpf.trim() ? data.cpf.trim() : null;
+        }
+        if (data.telefone !== undefined) {
+            cleanData.telefone = data.telefone && data.telefone.trim() ? data.telefone.trim() : null;
+        }
+        
+        const response = await apiClient.put<User>(
+            API_ENDPOINTS.admin.escritorioAdmins.update(escritorioId, userId),
+            cleanData
+        );
+        return response.data;
+    },
+
+    async toggleEscritorioAdminActive(escritorioId: number, userId: number) {
+        const response = await apiClient.patch<User>(
+            API_ENDPOINTS.admin.escritorioAdmins.toggleActive(escritorioId, userId)
+        );
+        return response.data;
+    },
+
+    async deleteEscritorioAdmin(escritorioId: number, userId: number) {
+        await apiClient.delete(API_ENDPOINTS.admin.escritorioAdmins.delete(escritorioId, userId));
     },
 };
 

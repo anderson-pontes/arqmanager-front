@@ -23,13 +23,17 @@ export interface Escritorio {
     razaoSocial: string;
     documento: string;
     email: string;
-    telefone: string;
-    endereco: string;
+    telefone?: string | null;
+    endereco?: string | null;
     cor: string;
-    diasUteis: boolean;
-    prazoArquivaProposta: number;
-    observacaoPropostaPadrao: string;
-    observacaoContratoPadrao: string;
+    ativo: boolean;
+    created_at?: string;
+    updated_at?: string;
+    // Campos opcionais que podem não vir do backend administrativo
+    diasUteis?: boolean;
+    prazoArquivaProposta?: number;
+    observacaoPropostaPadrao?: string;
+    observacaoContratoPadrao?: string;
 }
 
 export interface Colaborador {

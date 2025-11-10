@@ -77,15 +77,22 @@ export const API_ENDPOINTS = {
             detail: (id: number) => `/escritorios/${id}`,
             create: '/escritorios',
             update: (id: number) => `/escritorios/${id}`,
+            toggleActive: (id: number) => `/escritorios/${id}/toggle-active`,
             delete: (id: number) => `/escritorios/${id}`,
         },
         systemAdmins: {
             list: '/admin/system-admins',
             create: '/admin/system-admin',
+            update: (userId: number) => `/admin/system-admin/${userId}`,
+            toggleActive: (userId: number) => `/admin/system-admin/${userId}/toggle-active`,
+            delete: (userId: number) => `/admin/system-admin/${userId}`,
         },
         escritorioAdmins: {
             list: (escritorioId: number) => `/admin/escritorio-admins/${escritorioId}`,
             create: (escritorioId: number) => `/admin/escritorio-admin/${escritorioId}`,
+            update: (escritorioId: number, userId: number) => `/admin/escritorio-admin/${escritorioId}/${userId}`,
+            toggleActive: (escritorioId: number, userId: number) => `/admin/escritorio-admin/${escritorioId}/${userId}/toggle-active`,
+            delete: (escritorioId: number, userId: number) => `/admin/escritorio-admin/${escritorioId}/${userId}`,
         },
     },
     // Dashboard

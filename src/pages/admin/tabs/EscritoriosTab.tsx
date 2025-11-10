@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Building2, Edit, Trash2, Mail, Phone, MapPin } from 'lucide-react';
+import { Plus, Building2, Edit, Trash2, Mail, Phone, MapPin, Power, X, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { adminService, type CreateEscritorioRequest, type CreateAdminRequest } from '@/api/services/admin.service';
 import type { Escritorio } from '@/types';
 import { toast } from 'sonner';
 import { CreateEscritorioDialog } from '../dialogs/CreateEscritorioDialog';
+import { EditEscritorioDialog } from '../dialogs/EditEscritorioDialog';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -18,9 +20,14 @@ import {
 } from '@/components/ui/alert-dialog';
 
 export function EscritoriosTab() {
+    const navigate = useNavigate();
     const [escritorios, setEscritorios] = useState<Escritorio[]>([]);
     const [loading, setLoading] = useState(true);
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [escritorioToEdit, setEscritorioToEdit] = useState<Escritorio | null>(null);
+    const [toggleDialogOpen, setToggleDialogOpen] = useState(false);
+    const [escritorioToToggle, setEscritorioToToggle] = useState<Escritorio | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [escritorioToDelete, setEscritorioToDelete] = useState<Escritorio | null>(null);
 
@@ -44,10 +51,11 @@ export function EscritoriosTab() {
 
     const handleCreate = async (escritorioData: CreateEscritorioRequest, adminData: CreateAdminRequest) => {
         try {
-            await adminService.createEscritorioWithAdmin(escritorioData, adminData);
+            const result = await adminService.createEscritorioWithAdmin(escritorioData, adminData);
             toast.success('Escritório criado com sucesso!');
             setCreateDialogOpen(false);
-            loadEscritorios();
+            // Adicionar o novo escritório na lista
+            setEscritorios((prev) => [result.escritorio, ...prev]);
         } catch (error: any) {
             toast.error('Erro ao criar escritório', {
                 description: error.response?.data?.detail || error.message,
@@ -56,17 +64,55 @@ export function EscritoriosTab() {
         }
     };
 
+    const handleEdit = async (id: number, data: Partial<CreateEscritorioRequest>) => {
+        try {
+            const updated = await adminService.updateEscritorio(id, data);
+            toast.success('Escritório atualizado com sucesso!');
+            setEditDialogOpen(false);
+            setEscritorioToEdit(null);
+            // Atualizar o escritório na lista localmente
+            setEscritorios((prev) =>
+                prev.map((e) => (e.id === id ? updated : e))
+            );
+        } catch (error: any) {
+            toast.error('Erro ao atualizar escritório', {
+                description: error.response?.data?.detail || error.message,
+            });
+            throw error;
+        }
+    };
+
+    const handleToggle = async () => {
+        if (!escritorioToToggle) return;
+
+        try {
+            await adminService.toggleEscritorioActive(escritorioToToggle.id);
+            toast.success(
+                escritorioToToggle.ativo
+                    ? 'Escritório desativado com sucesso!'
+                    : 'Escritório ativado com sucesso!'
+            );
+            setToggleDialogOpen(false);
+            setEscritorioToToggle(null);
+            loadEscritorios();
+        } catch (error: any) {
+            toast.error('Erro ao alterar status do escritório', {
+                description: error.response?.data?.detail || error.message,
+            });
+        }
+    };
+
     const handleDelete = async () => {
         if (!escritorioToDelete) return;
 
         try {
             await adminService.deleteEscritorio(escritorioToDelete.id);
-            toast.success('Escritório desativado com sucesso!');
+            toast.success('Escritório removido permanentemente!');
             setDeleteDialogOpen(false);
             setEscritorioToDelete(null);
             loadEscritorios();
         } catch (error: any) {
-            toast.error('Erro ao desativar escritório', {
+            toast.error('Erro ao remover escritório', {
                 description: error.response?.data?.detail || error.message,
             });
         }
@@ -137,30 +183,53 @@ export function EscritoriosTab() {
                                     <span className="font-medium">CNPJ:</span> {escritorio.documento}
                                 </div>
                             </div>
-                            <div className="flex gap-2 pt-2">
+                            <div className="flex flex-col gap-2 pt-2">
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="flex-1"
-                                    onClick={() => {
-                                        // TODO: Implementar edição
-                                        toast.info('Edição em desenvolvimento');
-                                    }}
+                                    className="w-full"
+                                    onClick={() => navigate(`/admin/escritorios/${escritorio.id}`)}
                                 >
-                                    <Edit className="h-4 w-4 mr-1" />
-                                    Editar
+                                    <Eye className="h-4 w-4 mr-1" />
+                                    Visualizar
                                 </Button>
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="flex-1"
+                                        onClick={() => {
+                                            setEscritorioToEdit(escritorio);
+                                            setEditDialogOpen(true);
+                                        }}
+                                    >
+                                        <Edit className="h-4 w-4 mr-1" />
+                                        Editar
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="flex-1"
+                                        onClick={() => {
+                                            setEscritorioToToggle(escritorio);
+                                            setToggleDialogOpen(true);
+                                        }}
+                                    >
+                                        <Power className="h-4 w-4 mr-1" />
+                                        {escritorio.ativo ? 'Desativar' : 'Ativar'}
+                                    </Button>
+                                </div>
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="flex-1 text-destructive"
+                                    className="w-full text-destructive hover:text-destructive"
                                     onClick={() => {
                                         setEscritorioToDelete(escritorio);
                                         setDeleteDialogOpen(true);
                                     }}
                                 >
-                                    <Trash2 className="h-4 w-4 mr-1" />
-                                    Desativar
+                                    <X className="h-4 w-4 mr-1" />
+                                    Excluir Permanentemente
                                 </Button>
                             </div>
                         </CardContent>
@@ -189,21 +258,68 @@ export function EscritoriosTab() {
                 onSubmit={handleCreate}
             />
 
-            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+            <EditEscritorioDialog
+                open={editDialogOpen}
+                onOpenChange={setEditDialogOpen}
+                escritorio={escritorioToEdit}
+                onSubmit={handleEdit}
+            />
+
+            <AlertDialog open={toggleDialogOpen} onOpenChange={setToggleDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Desativar Escritório?</AlertDialogTitle>
+                        <AlertDialogTitle>
+                            {escritorioToToggle?.ativo
+                                ? 'Desativar Escritório?'
+                                : 'Ativar Escritório?'}
+                        </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Tem certeza que deseja desativar o escritório{' '}
-                            <strong>{escritorioToDelete?.nomeFantasia}</strong>?
-                            <br />
-                            Esta ação pode ser revertida posteriormente.
+                            {escritorioToToggle?.ativo ? (
+                                <>
+                                    Tem certeza que deseja desativar o escritório{' '}
+                                    <strong>{escritorioToToggle?.nomeFantasia}</strong>?
+                                    <br />
+                                    O escritório ficará inativo, mas poderá ser reativado posteriormente.
+                                </>
+                            ) : (
+                                <>
+                                    Tem certeza que deseja ativar o escritório{' '}
+                                    <strong>{escritorioToToggle?.nomeFantasia}</strong>?
+                                    <br />
+                                    O escritório voltará a estar ativo no sistema.
+                                </>
+                            )}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete} className="bg-destructive">
-                            Desativar
+                        <AlertDialogAction onClick={handleToggle}>
+                            {escritorioToToggle?.ativo ? 'Desativar' : 'Ativar'}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Excluir Escritório Permanentemente?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Tem certeza que deseja remover permanentemente o escritório{' '}
+                            <strong>{escritorioToDelete?.nomeFantasia}</strong>?
+                            <br />
+                            <strong className="text-destructive">
+                                Esta ação não pode ser desfeita! Todos os dados relacionados serão perdidos.
+                            </strong>
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDelete}
+                            className="bg-destructive hover:bg-destructive/90"
+                        >
+                            Excluir Permanentemente
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

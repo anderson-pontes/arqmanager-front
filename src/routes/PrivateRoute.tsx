@@ -15,7 +15,8 @@ export function PrivateRoute({ children }: PrivateRouteProps) {
     // Se precisa selecionar escritório e não tem contexto (exceto na própria página de seleção e área admin)
     const isSelectionPage = window.location.pathname === '/selecionar-contexto' || 
                            window.location.pathname === '/selecionar-escritorio';
-    const isAdminPage = window.location.pathname === '/admin';
+    const isAdminPage = window.location.pathname === '/admin' || 
+                       window.location.pathname.startsWith('/admin/');
     
     // Se está em modo admin, pode acessar área admin sem contexto de escritório
     if (isAdminMode && isAdminPage) {
