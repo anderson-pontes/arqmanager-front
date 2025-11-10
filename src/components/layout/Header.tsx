@@ -1,4 +1,4 @@
-import { Bell, Menu, Search, User } from 'lucide-react';
+import { Bell, Menu, Search, User, Building2, Settings, LogOut, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -13,8 +13,6 @@ import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { getInitials } from '@/utils/formatters';
-import { EscritorioSwitcher } from './EscritorioSwitcher';
-import { ContextSwitcher } from './ContextSwitcher';
 import logoSemNome from '@/assets/logosemnome.png';
 
 interface HeaderProps {
@@ -22,7 +20,7 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
-    const { user, clearAuth, isAdminMode } = useAuthStore();
+    const { user, clearAuth, isAdminMode, currentContext, isSystemAdmin } = useAuthStore();
     const navigate = useNavigate();
 
     const handleLogout = async () => {
@@ -39,6 +37,15 @@ export function Header({ onMenuClick }: HeaderProps) {
             navigate('/login');
         }
     };
+
+    const handleChangeContext = () => {
+        navigate('/selecionar-contexto');
+    };
+
+    // Obter escritório atual
+    const currentEscritorio = user?.escritorios.find(
+        (e) => e.escritorio.id === currentContext?.escritorioId
+    );
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md shadow-md">
@@ -84,28 +91,98 @@ export function Header({ onMenuClick }: HeaderProps) {
 
                 {/* Right Actions - Alinhado à direita */}
                 <div className="flex items-center gap-2 shrink-0">
-                    {/* Context Switcher (substitui EscritorioSwitcher) */}
-                    <ContextSwitcher />
-
                     {/* Notifications */}
                     <Button variant="ghost" size="icon" className="relative">
                         <Bell className="h-5 w-5" />
                         <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
                     </Button>
 
-                    {/* User Menu */}
+                    {/* User Menu Integrado com Context Switcher */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                                <Avatar className="h-9 w-9">
+                            <Button variant="ghost" className="relative h-auto px-2 py-1.5 gap-2">
+                                <Avatar className="h-8 w-8">
                                     <AvatarImage src={user?.foto} alt={user?.nome} />
                                     <AvatarFallback>
                                         {user ? getInitials(user.nome) : 'U'}
                                     </AvatarFallback>
                                 </Avatar>
+                                <div className="hidden md:flex flex-col items-start text-left">
+                                    <span className="text-sm font-medium leading-none">
+                                        {user?.nome}
+                                    </span>
+                                    {isAdminMode ? (
+                                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                            <Shield className="h-3 w-3" />
+                                            Área Administrativa
+                                        </span>
+                                    ) : currentEscritorio ? (
+                                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                            <Building2 className="h-3 w-3" />
+                                            {currentEscritorio.escritorio.nomeFantasia}
+                                        </span>
+                                    ) : null}
+                                </div>
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56" align="end" forceMount>
+                        <DropdownMenuContent className="w-64" align="end" forceMount>
+                            {/* Seção: Contexto/Escritório */}
+                            {isAdminMode ? (
+                                <>
+                                    <DropdownMenuLabel>
+                                        <div className="flex flex-col space-y-1">
+                                            <div className="flex items-center gap-2">
+                                                <Shield className="h-4 w-4 text-primary" />
+                                                <p className="text-sm font-medium leading-none">
+                                                    Área Administrativa
+                                                </p>
+                                            </div>
+                                            <p className="text-xs leading-none text-muted-foreground">
+                                                Gerenciamento do Sistema
+                                            </p>
+                                            {isSystemAdmin && (
+                                                <p className="text-xs leading-none text-primary font-semibold">
+                                                    Admin do Sistema
+                                                </p>
+                                            )}
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={handleChangeContext}>
+                                        <Settings className="mr-2 h-4 w-4" />
+                                        Trocar Contexto
+                                    </DropdownMenuItem>
+                                </>
+                            ) : currentEscritorio ? (
+                                <>
+                                    <DropdownMenuLabel>
+                                        <div className="flex flex-col space-y-1">
+                                            <div className="flex items-center gap-2">
+                                                <Building2 className="h-4 w-4 text-primary" />
+                                                <p className="text-sm font-medium leading-none">
+                                                    {currentEscritorio.escritorio.nomeFantasia}
+                                                </p>
+                                            </div>
+                                            <p className="text-xs leading-none text-muted-foreground">
+                                                Perfil: {currentContext?.perfil || currentEscritorio.perfil}
+                                            </p>
+                                            {isSystemAdmin && (
+                                                <p className="text-xs leading-none text-primary font-semibold">
+                                                    Admin do Sistema
+                                                </p>
+                                            )}
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={handleChangeContext}>
+                                        <Settings className="mr-2 h-4 w-4" />
+                                        Trocar Escritório/Perfil
+                                    </DropdownMenuItem>
+                                </>
+                            ) : null}
+
+                            {/* Seção: Usuário */}
+                            <DropdownMenuSeparator />
                             <DropdownMenuLabel className="font-normal">
                                 <div className="flex flex-col space-y-1">
                                     <p className="text-sm font-medium leading-none">
@@ -122,10 +199,12 @@ export function Header({ onMenuClick }: HeaderProps) {
                                 Meu Perfil
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => navigate('/configuracoes')}>
+                                <Settings className="mr-2 h-4 w-4" />
                                 Configurações
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={handleLogout}>
+                            <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                                <LogOut className="mr-2 h-4 w-4" />
                                 Sair
                             </DropdownMenuItem>
                         </DropdownMenuContent>

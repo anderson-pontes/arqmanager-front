@@ -9,6 +9,7 @@ import type { User, Escritorio } from '@/types';
 import { toast } from 'sonner';
 import { CreateAdminDialog } from '../dialogs/CreateAdminDialog';
 import { EditAdminDialog } from '../dialogs/EditAdminDialog';
+import { LinkAdminDialog } from '../dialogs/LinkAdminDialog';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -27,6 +28,7 @@ export function EscritorioAdminsTab() {
     const [admins, setAdmins] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
+    const [linkDialogOpen, setLinkDialogOpen] = useState(false);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [adminToEdit, setAdminToEdit] = useState<User | null>(null);
     const [toggleDialogOpen, setToggleDialogOpen] = useState(false);
@@ -154,13 +156,23 @@ export function EscritorioAdminsTab() {
                         Gerencie os administradores de cada escritório
                     </p>
                 </div>
-                <Button
-                    onClick={() => setCreateDialogOpen(true)}
-                    disabled={!selectedEscritorio || escritorios.length === 0}
-                >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Novo Admin do Escritório
-                </Button>
+                <div className="flex gap-2">
+                    <Button
+                        variant="outline"
+                        onClick={() => setLinkDialogOpen(true)}
+                        disabled={!selectedEscritorio || escritorios.length === 0}
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Vincular Admin Existente
+                    </Button>
+                    <Button
+                        onClick={() => setCreateDialogOpen(true)}
+                        disabled={!selectedEscritorio || escritorios.length === 0}
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Novo Admin do Escritório
+                    </Button>
+                </div>
             </div>
 
             <Card className="mb-4">
@@ -337,6 +349,18 @@ export function EscritorioAdminsTab() {
                 title="Criar Administrador do Escritório"
                 description={`Crie um novo administrador para o escritório ${selectedEscritorioData?.nomeFantasia}.`}
             />
+
+            {selectedEscritorio && (
+                <LinkAdminDialog
+                    open={linkDialogOpen}
+                    onOpenChange={setLinkDialogOpen}
+                    escritorioId={selectedEscritorio}
+                    onSuccess={() => {
+                        toast.success('Administrador vinculado ao escritório com sucesso!');
+                        loadAdmins();
+                    }}
+                />
+            )}
 
             <EditAdminDialog
                 open={editDialogOpen}

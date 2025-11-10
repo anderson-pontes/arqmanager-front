@@ -93,6 +93,8 @@ export const API_ENDPOINTS = {
             update: (escritorioId: number, userId: number) => `/admin/escritorio-admin/${escritorioId}/${userId}`,
             toggleActive: (escritorioId: number, userId: number) => `/admin/escritorio-admin/${escritorioId}/${userId}/toggle-active`,
             delete: (escritorioId: number, userId: number) => `/admin/escritorio-admin/${escritorioId}/${userId}`,
+            available: '/admin/available-escritorio-admins',
+            link: (escritorioId: number, userId: number) => `/admin/escritorio-admin/${escritorioId}/link/${userId}`,
         },
     },
     // Dashboard

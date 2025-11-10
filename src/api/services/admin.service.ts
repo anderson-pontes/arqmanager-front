@@ -299,5 +299,20 @@ export const adminService = {
     async deleteEscritorioAdmin(escritorioId: number, userId: number) {
         await apiClient.delete(API_ENDPOINTS.admin.escritorioAdmins.delete(escritorioId, userId));
     },
+
+    async getAvailableEscritorioAdmins(params?: { skip?: number; limit?: number }) {
+        const response = await apiClient.get<User[]>(
+            API_ENDPOINTS.admin.escritorioAdmins.available,
+            { params }
+        );
+        return response.data;
+    },
+
+    async linkEscritorioAdmin(escritorioId: number, userId: number) {
+        const response = await apiClient.post<{ message: string; user: User; escritorio_id: number }>(
+            API_ENDPOINTS.admin.escritorioAdmins.link(escritorioId, userId)
+        );
+        return response.data;
+    },
 };
 
