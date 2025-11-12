@@ -43,81 +43,81 @@
 
 :root {
   --radius: 0.625rem;
-  /* Paleta B: Concrete (sem bronze) */
-  --background: oklch(0.98 0.01 250);      /* Concreto claro */
-  --foreground: oklch(0.30 0.02 250);      /* Cinza frio (charcoal) */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.30 0.02 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.30 0.02 250);
-  --primary: oklch(0.55 0.06 250);         /* Ardósia/Concreto médio */
-  --primary-foreground: oklch(0.985 0.004 250);
-  --secondary: oklch(0.93 0.008 250);      /* Concreto sutil */
-  --secondary-foreground: oklch(0.36 0.02 250);
-  --muted: oklch(0.95 0.008 250);          /* Cinza sutil */
-  --muted-foreground: oklch(0.50 0.02 250);
-  --accent: oklch(0.90 0.008 250);         /* Acento neutro (cinza claro) */
-  --accent-foreground: oklch(0.30 0.02 250);
-  --destructive: oklch(0.60 0.23 28);
-  --border: oklch(0.88 0.008 250);
-  --input: oklch(0.96 0.008 250);
-  --ring: oklch(0.55 0.06 250);
+  /* Paleta ARQManager - Baseada em #A57CFA (violet-400) */
+  --background: #F5F5F7;      /* gray-100 - Fundo Claro */
+  --foreground: #2E2E38;      /* gray-800 - Texto Principal */
+  --card: #FFFFFF;
+  --card-foreground: #2E2E38;
+  --popover: #FFFFFF;
+  --popover-foreground: #2E2E38;
+  --primary: #A57CFA;         /* violet-400 - Roxo Arquitetura */
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5F5F7;       /* gray-100 - Cinza Neutro */
+  --secondary-foreground: #2E2E38;
+  --muted: #F5F5F7;           /* gray-100 - Cinza Neutro */
+  --muted-foreground: #6B7280; /* gray-500 */
+  --accent: #F5F5F7;          /* gray-100 - Acento neutro */
+  --accent-foreground: #2E2E38;
+  --destructive: #F87171;     /* red-400 - Erro */
+  --border: #D1D5DB;          /* gray-300 - Bordas/Linhas */
+  --input: #FFFFFF;
+  --ring: #A57CFA;            /* violet-400 - Focus ring */
   /* Gráficos harmonizados com a paleta */
-  --chart-1: oklch(0.55 0.06 250); /* Ardósia */
-  --chart-2: oklch(0.64 0.05 250);  /* Cinza ardósia alternativo */
-  --chart-3: oklch(0.66 0.09 240); /* Azul ardósia */
-  --chart-4: oklch(0.76 0.09 150); /* Verde sálvia */
-  --chart-5: oklch(0.73 0.08 300); /* Lilás acinzentado */
-  --sidebar: oklch(0.98 0.01 250);
-  --sidebar-foreground: oklch(0.32 0.02 250);
-  --sidebar-primary: oklch(0.55 0.06 250);
-  --sidebar-primary-foreground: oklch(0.985 0.004 250);
-  --sidebar-accent: oklch(0.93 0.008 250);
-  --sidebar-accent-foreground: oklch(0.36 0.02 250);
-  --sidebar-border: oklch(0.88 0.008 250);
-  --sidebar-ring: oklch(0.55 0.06 250);
+  --chart-1: #A57CFA;         /* violet-400 */
+  --chart-2: #8B5CF6;         /* violet-500 */
+  --chart-3: #4ADE80;         /* green-400 - Sucesso */
+  --chart-4: #F87171;         /* red-400 - Erro */
+  --chart-5: #FBBF24;         /* amber-400 - Aviso */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #2E2E38;
+  --sidebar-primary: #A57CFA;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F5F5F7;
+  --sidebar-accent-foreground: #2E2E38;
+  --sidebar-border: #D1D5DB;
+  --sidebar-ring: #A57CFA;
 }
 
 .dark {
-  /* Dark mode para Concrete (sem bronze) */
-  --background: oklch(0.16 0.02 250);
-  --foreground: oklch(0.93 0.01 250);
-  --card: oklch(0.20 0.02 250);
-  --card-foreground: oklch(0.93 0.01 250);
-  --popover: oklch(0.20 0.02 250);
-  --popover-foreground: oklch(0.93 0.01 250);
-  --primary: oklch(0.60 0.06 250);
-  --primary-foreground: oklch(0.16 0.02 250);
-  --secondary: oklch(0.26 0.02 250);
-  --secondary-foreground: oklch(0.93 0.01 250);
-  --muted: oklch(0.24 0.02 250);
-  --muted-foreground: oklch(0.67 0.02 250);
-  --accent: oklch(0.30 0.02 250);
-  --accent-foreground: oklch(0.93 0.01 250);
-  --destructive: oklch(0.70 0.18 28);
-  --border: oklch(0.28 0.02 250);
-  --input: oklch(0.26 0.02 250);
-  --ring: oklch(0.60 0.06 250);
-  --chart-1: oklch(0.60 0.06 250);
-  --chart-2: oklch(0.64 0.05 250);
-  --chart-3: oklch(0.68 0.09 240);
-  --chart-4: oklch(0.66 0.09 150);
-  --chart-5: oklch(0.72 0.07 300);
-  --sidebar: oklch(0.20 0.02 250);
-  --sidebar-foreground: oklch(0.93 0.01 250);
-  --sidebar-primary: oklch(0.60 0.06 250);
-  --sidebar-primary-foreground: oklch(0.16 0.02 250);
-  --sidebar-accent: oklch(0.26 0.02 250);
-  --sidebar-accent-foreground: oklch(0.93 0.01 250);
-  --sidebar-border: oklch(0.28 0.02 250);
-  --sidebar-ring: oklch(0.60 0.06 250);
+  /* Dark mode ARQManager */
+  --background: #1E1E24;      /* gray-900 - Fundo Escuro */
+  --foreground: #E5E5EA;     /* gray-100 - Texto Claro */
+  --card: #2A2A32;           /* gray-800 - Container Escuro */
+  --card-foreground: #E5E5EA;
+  --popover: #2A2A32;
+  --popover-foreground: #E5E5EA;
+  --primary: #A57CFA;         /* violet-400 - Roxo Arquitetura */
+  --primary-foreground: #FFFFFF;
+  --secondary: #2A2A32;       /* gray-800 */
+  --secondary-foreground: #E5E5EA;
+  --muted: #2A2A32;           /* gray-800 */
+  --muted-foreground: #9CA3AF; /* gray-400 */
+  --accent: #3C3C46;          /* gray-700 - Bordas Escuras */
+  --accent-foreground: #E5E5EA;
+  --destructive: #F87171;     /* red-400 */
+  --border: #3C3C46;          /* gray-700 - Bordas Escuras */
+  --input: #2A2A32;
+  --ring: #A57CFA;            /* violet-400 */
+  --chart-1: #A57CFA;         /* violet-400 */
+  --chart-2: #8B5CF6;         /* violet-500 */
+  --chart-3: #4ADE80;         /* green-400 */
+  --chart-4: #F87171;         /* red-400 */
+  --chart-5: #FBBF24;         /* amber-400 */
+  --sidebar: #2A2A32;
+  --sidebar-foreground: #E5E5EA;
+  --sidebar-primary: #A57CFA;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #3C3C46;
+  --sidebar-accent-foreground: #E5E5EA;
+  --sidebar-border: #3C3C46;
+  --sidebar-ring: #A57CFA;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-gray-300 outline-violet-400/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gray-100 text-gray-800;
   }
 }

@@ -48,7 +48,7 @@ export function Header({ onMenuClick }: HeaderProps) {
     );
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md shadow-md">
+        <header className="sticky top-0 z-50 w-full border-b border-gray-300 bg-white/80 backdrop-blur-md shadow-md">
             <div className="flex h-14 items-center gap-4 px-4">
                 {/* Menu Button (Mobile) */}
                 <Button
@@ -67,7 +67,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                         alt="ARQManager"
                         className="h-16 w-16 object-contain"
                     />
-                    <span className="hidden font-semibold sm:inline-block bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                    <span className="hidden font-semibold sm:inline-block bg-gradient-to-r from-violet-400 to-violet-500 bg-clip-text text-transparent">
                         ARQManager
                     </span>
                 </div>
@@ -76,7 +76,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                 {!isAdminMode && (
                     <div className="hidden md:flex flex-1 justify-center px-4">
                         <div className="relative w-full max-w-md">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
                             <Input
                                 type="search"
                                 placeholder="Buscar projetos, clientes..."
@@ -112,12 +112,12 @@ export function Header({ onMenuClick }: HeaderProps) {
                                         {user?.nome}
                                     </span>
                                     {isAdminMode ? (
-                                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                        <span className="text-xs text-gray-600 flex items-center gap-1">
                                             <Shield className="h-3 w-3" />
                                             Área Administrativa
                                         </span>
                                     ) : currentEscritorio ? (
-                                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                        <span className="text-xs text-gray-600 flex items-center gap-1">
                                             <Building2 className="h-3 w-3" />
                                             {currentEscritorio.escritorio.nomeFantasia}
                                         </span>
@@ -132,16 +132,16 @@ export function Header({ onMenuClick }: HeaderProps) {
                                     <DropdownMenuLabel>
                                         <div className="flex flex-col space-y-1">
                                             <div className="flex items-center gap-2">
-                                                <Shield className="h-4 w-4 text-primary" />
-                                                <p className="text-sm font-medium leading-none">
+                                                <Shield className="h-4 w-4 text-violet-400" />
+                                                <p className="text-sm font-medium leading-none text-gray-800">
                                                     Área Administrativa
                                                 </p>
                                             </div>
-                                            <p className="text-xs leading-none text-muted-foreground">
+                                            <p className="text-xs leading-none text-gray-600">
                                                 Gerenciamento do Sistema
                                             </p>
                                             {isSystemAdmin && (
-                                                <p className="text-xs leading-none text-primary font-semibold">
+                                                <p className="text-xs leading-none text-violet-400 font-semibold">
                                                     Admin do Sistema
                                                 </p>
                                             )}
@@ -158,16 +158,16 @@ export function Header({ onMenuClick }: HeaderProps) {
                                     <DropdownMenuLabel>
                                         <div className="flex flex-col space-y-1">
                                             <div className="flex items-center gap-2">
-                                                <Building2 className="h-4 w-4 text-primary" />
-                                                <p className="text-sm font-medium leading-none">
+                                                <Building2 className="h-4 w-4 text-violet-400" />
+                                                <p className="text-sm font-medium leading-none text-gray-800">
                                                     {currentEscritorio.escritorio.nomeFantasia}
                                                 </p>
                                             </div>
-                                            <p className="text-xs leading-none text-muted-foreground">
+                                            <p className="text-xs leading-none text-gray-600">
                                                 Perfil: {currentContext?.perfil || currentEscritorio.perfil}
                                             </p>
                                             {isSystemAdmin && (
-                                                <p className="text-xs leading-none text-primary font-semibold">
+                                                <p className="text-xs leading-none text-violet-400 font-semibold">
                                                     Admin do Sistema
                                                 </p>
                                             )}
@@ -188,7 +188,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                                     <p className="text-sm font-medium leading-none">
                                         {user?.nome}
                                     </p>
-                                    <p className="text-xs leading-none text-muted-foreground">
+                                    <p className="text-xs leading-none text-gray-600">
                                         {user?.email}
                                     </p>
                                 </div>
@@ -203,7 +203,7 @@ export function Header({ onMenuClick }: HeaderProps) {
                                 Configurações
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                            <DropdownMenuItem onClick={handleLogout} className="text-red-400">
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Sair
                             </DropdownMenuItem>

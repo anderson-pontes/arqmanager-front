@@ -87,7 +87,7 @@ export function Sidebar({ className }: SidebarProps) {
     return (
         <aside
             className={cn(
-                'fixed left-0 top-14 z-40 h-[calc(100vh-3.5rem)] w-64 border-r border-border bg-background backdrop-blur-md shadow-lg',
+                'fixed left-0 top-14 z-40 h-[calc(100vh-3.5rem)] w-64 border-r border-gray-300 bg-white backdrop-blur-md shadow-lg',
                 className
             )}
         >
@@ -100,10 +100,10 @@ export function Sidebar({ className }: SidebarProps) {
                             className={({ isActive }) =>
                                 cn(
                                     'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                                    'hover:bg-accent hover:text-accent-foreground',
+                                    'hover:bg-gray-100 hover:text-gray-800',
                                     isActive
-                                        ? 'bg-accent text-accent-foreground'
-                                        : 'text-muted-foreground'
+                                        ? 'bg-violet-400 text-white'
+                                        : 'text-gray-600'
                                 )
                             }
                         >

@@ -124,34 +124,34 @@ export function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-linear-to-br from-purple-50 via-white to-purple-100">
+        <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-gray-100">
             {/* Formas Geométricas de Fundo - Inspiradas em Arquitetura */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {/* Retângulos grandes - Estruturas */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rotate-12 rounded-3xl transform translate-x-32 -translate-y-32" />
-                <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/10 -rotate-12 rounded-3xl transform -translate-x-24 translate-y-24" />
+                <div className="absolute top-0 right-0 w-96 h-96 bg-violet-400/5 rotate-12 rounded-3xl transform translate-x-32 -translate-y-32" />
+                <div className="absolute bottom-0 left-0 w-80 h-80 bg-violet-400/10 -rotate-12 rounded-3xl transform -translate-x-24 translate-y-24" />
 
                 {/* Círculos - Elementos modernos */}
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-200/20 rounded-full blur-3xl" />
-                <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-purple-300/15 rounded-full blur-3xl" />
+                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-violet-400/20 rounded-full blur-3xl" />
+                <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-violet-500/15 rounded-full blur-3xl" />
 
                 {/* Linhas e grades - Plantas arquitetônicas */}
-                <div className="absolute top-1/3 right-1/3 w-48 h-48 border-2 border-primary/10 rotate-45 rounded-lg" />
-                <div className="absolute bottom-1/3 left-1/3 w-40 h-40 border-2 border-primary/10 -rotate-45 rounded-lg" />
+                <div className="absolute top-1/3 right-1/3 w-48 h-48 border-2 border-violet-400/10 rotate-45 rounded-lg" />
+                <div className="absolute bottom-1/3 left-1/3 w-40 h-40 border-2 border-violet-400/10 -rotate-45 rounded-lg" />
 
                 {/* Pequenos quadrados - Detalhes */}
-                <div className="absolute top-20 left-20 w-16 h-16 bg-primary/5 rounded-lg rotate-12" />
-                <div className="absolute bottom-20 right-20 w-20 h-20 bg-primary/5 rounded-lg -rotate-12" />
-                <div className="absolute top-1/2 right-20 w-12 h-12 bg-primary/10 rounded-full" />
-                <div className="absolute bottom-1/2 left-20 w-14 h-14 bg-primary/10 rounded-full" />
+                <div className="absolute top-20 left-20 w-16 h-16 bg-violet-400/5 rounded-lg rotate-12" />
+                <div className="absolute bottom-20 right-20 w-20 h-20 bg-violet-400/5 rounded-lg -rotate-12" />
+                <div className="absolute top-1/2 right-20 w-12 h-12 bg-violet-400/10 rounded-full" />
+                <div className="absolute bottom-1/2 left-20 w-14 h-14 bg-violet-400/10 rounded-full" />
 
                 {/* Triângulos - Telhados */}
-                <div className="absolute top-40 right-40 w-0 h-0 border-l-40 border-l-transparent border-r-40 border-r-transparent border-b-60 border-b-primary/5 rotate-12" />
-                <div className="absolute bottom-40 left-40 w-0 h-0 border-l-50 border-l-transparent border-r-50 border-r-transparent border-b-70 border-b-primary/5 -rotate-12" />
+                <div className="absolute top-40 right-40 w-0 h-0 border-l-[40px] border-l-transparent border-r-[40px] border-r-transparent border-b-[60px] border-b-violet-400/5 rotate-12" />
+                <div className="absolute bottom-40 left-40 w-0 h-0 border-l-[50px] border-l-transparent border-r-[50px] border-r-transparent border-b-[70px] border-b-violet-400/5 -rotate-12" />
             </div>
 
             {/* Card de Login - Com backdrop blur para efeito glassmorphism */}
-            <Card className="w-full max-w-md relative z-10 shadow-2xl backdrop-blur-sm bg-white/95">
+            <Card className="w-full max-w-md relative z-10 shadow-2xl backdrop-blur-sm bg-white border-gray-300">
                 <CardHeader className="space-y-1">
                     <div className="flex items-center justify-center mb-6">
                         <img
@@ -160,41 +160,47 @@ export function Login() {
                             className="h-32 w-auto object-contain"
                         />
                     </div>
-                    <CardDescription className="text-center text-base">
+                    <CardDescription className="text-center text-base text-gray-800">
                         Entre com suas credenciais para acessar o sistema
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email" className="text-gray-800">Email</Label>
                             <Input
                                 id="email"
                                 type="email"
                                 placeholder="seu@email.com"
                                 {...register('email')}
                                 disabled={loading}
+                                className="border-gray-300"
                             />
                             {errors.email && (
-                                <p className="text-sm text-destructive">{errors.email.message}</p>
+                                <p className="text-sm text-red-400">{errors.email.message}</p>
                             )}
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="senha">Senha</Label>
+                            <Label htmlFor="senha" className="text-gray-800">Senha</Label>
                             <Input
                                 id="senha"
                                 type="password"
                                 placeholder="••••••••"
                                 {...register('senha')}
                                 disabled={loading}
+                                className="border-gray-300"
                             />
                             {errors.senha && (
-                                <p className="text-sm text-destructive">{errors.senha.message}</p>
+                                <p className="text-sm text-red-400">{errors.senha.message}</p>
                             )}
                         </div>
 
-                        <Button type="submit" className="w-full" disabled={loading}>
+                        <Button 
+                            type="submit" 
+                            className="w-full bg-violet-400 hover:bg-violet-500 text-white font-medium shadow-sm transition" 
+                            disabled={loading}
+                        >
                             {loading ? 'Entrando...' : 'Entrar'}
                         </Button>
 
@@ -202,7 +208,7 @@ export function Login() {
                             <Button
                                 type="button"
                                 variant="link"
-                                className="text-sm"
+                                className="text-sm text-gray-800 hover:text-violet-500"
                                 onClick={() => navigate('/recuperar-senha')}
                             >
                                 Esqueceu sua senha?
@@ -215,7 +221,7 @@ export function Login() {
             {/* Footer */}
             <div className="absolute bottom-0 left-0 right-0 z-10">
                 <div className="container mx-auto py-4">
-                    <p className="text-center text-sm text-muted-foreground">
+                    <p className="text-center text-sm text-gray-600">
                         © {new Date().getFullYear()} ARQManager. Todos os direitos reservados.
                     </p>
                 </div>

@@ -26,36 +26,36 @@ export function Dashboard() {
             title: 'Projetos Ativos',
             value: estatisticas.projetosAtivos,
             icon: FolderKanban,
-            color: 'text-blue-600',
-            bgColor: 'bg-blue-100',
+            color: 'text-violet-400',
+            bgColor: 'bg-violet-50',
         },
         {
             title: 'Projetos Atrasados',
             value: estatisticas.projetosAtrasados,
             icon: AlertCircle,
-            color: 'text-red-600',
-            bgColor: 'bg-red-100',
+            color: 'text-red-400',
+            bgColor: 'bg-red-50',
         },
         {
             title: 'Propostas Pendentes',
             value: estatisticas.propostasPendentes,
             icon: FileText,
-            color: 'text-yellow-600',
-            bgColor: 'bg-yellow-100',
+            color: 'text-amber-400',
+            bgColor: 'bg-amber-50',
         },
         {
             title: 'Receita do Mês',
             value: formatCurrency(estatisticas.receitaMes),
             icon: DollarSign,
-            color: 'text-green-600',
-            bgColor: 'bg-green-100',
+            color: 'text-green-400',
+            bgColor: 'bg-green-50',
         },
         {
             title: 'Receita Prevista',
             value: formatCurrency(estatisticas.receitaPrevista),
             icon: TrendingUp,
-            color: 'text-purple-600',
-            bgColor: 'bg-purple-100',
+            color: 'text-violet-500',
+            bgColor: 'bg-violet-50',
         },
     ];
 
@@ -82,7 +82,7 @@ export function Dashboard() {
                     {/* Stats Grid */}
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                         {stats.map((stat) => (
-                            <Card key={stat.title} className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg hover:shadow-xl transition-shadow">
+                            <Card key={stat.title} className="bg-white border-gray-300 shadow-sm hover:shadow-md transition-shadow">
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <CardTitle className="text-sm font-medium">
                                         {stat.title}
@@ -100,7 +100,7 @@ export function Dashboard() {
 
                     <div className="grid gap-6 md:grid-cols-2">
                         {/* Projetos em Andamento */}
-                        <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
+                        <Card className="bg-white border-gray-300 shadow-sm">
                             <CardHeader>
                                 <CardTitle>Projetos em Andamento</CardTitle>
                             </CardHeader>
@@ -109,12 +109,12 @@ export function Dashboard() {
                                     {projetosAndamento.slice(0, 5).map((projeto) => (
                                         <div
                                             key={projeto.id}
-                                            className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
+                                            className="flex items-center justify-between p-3 rounded-lg border border-gray-300 hover:bg-gray-100 cursor-pointer transition-colors"
                                             onClick={() => navigate(`/projetos/${projeto.id}`)}
                                         >
                                             <div className="flex-1">
                                                 <p className="font-medium">{projeto.descricao}</p>
-                                                <p className="text-sm text-muted-foreground">
+                                                <p className="text-sm text-gray-600">
                                                     {projeto.cliente.nome}
                                                 </p>
                                             </div>
@@ -126,10 +126,10 @@ export function Dashboard() {
                         </Card>
 
                         {/* Projetos Atrasados */}
-                        <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
+                        <Card className="bg-white border-gray-300 shadow-sm">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <AlertCircle className="h-5 w-5 text-red-600" />
+                                    <AlertCircle className="h-5 w-5 text-red-400" />
                                     Projetos Atrasados
                                 </CardTitle>
                             </CardHeader>
@@ -138,14 +138,14 @@ export function Dashboard() {
                                     {projetosAtrasados.map((projeto) => (
                                         <div
                                             key={projeto.id}
-                                            className="flex items-center justify-between p-3 rounded-lg border border-red-200 bg-red-50"
+                                            className="flex items-center justify-between p-3 rounded-lg border border-red-300 bg-red-50"
                                         >
                                             <div className="flex-1">
                                                 <p className="font-medium">{projeto.numero}</p>
-                                                <p className="text-sm text-muted-foreground">
+                                                <p className="text-sm text-gray-600">
                                                     {projeto.cliente}
                                                 </p>
-                                                <p className="text-xs text-red-600 mt-1">
+                                                <p className="text-xs text-red-400 mt-1">
                                                     {projeto.diasAtraso} dias de atraso - {projeto.etapaAtrasada}
                                                 </p>
                                             </div>
@@ -156,7 +156,7 @@ export function Dashboard() {
                         </Card>
 
                         {/* Aniversariantes */}
-                        <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
+                        <Card className="bg-white border-gray-300 shadow-sm">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <Calendar className="h-5 w-5" />
@@ -172,7 +172,7 @@ export function Dashboard() {
                                         >
                                             <div>
                                                 <p className="font-medium">{aniversariante.nome}</p>
-                                                <p className="text-sm text-muted-foreground capitalize">
+                                                <p className="text-sm text-gray-600 capitalize">
                                                     {aniversariante.tipo}
                                                 </p>
                                             </div>
@@ -184,7 +184,7 @@ export function Dashboard() {
                         </Card>
 
                         {/* Pagamentos Pendentes */}
-                        <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
+                        <Card className="bg-white border-gray-300 shadow-sm">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <DollarSign className="h-5 w-5" />
@@ -200,17 +200,17 @@ export function Dashboard() {
                                         >
                                             <div className="flex-1">
                                                 <p className="font-medium">{pagamento.projeto}</p>
-                                                <p className="text-sm text-muted-foreground">
+                                                <p className="text-sm text-gray-600">
                                                     {pagamento.cliente}
                                                 </p>
-                                                <p className="text-xs text-muted-foreground mt-1">
+                                                <p className="text-xs text-gray-600 mt-1">
                                                     Vencimento: {pagamento.vencimento}
                                                 </p>
                                             </div>
                                             <div className="text-right">
                                                 <p className="font-bold">{formatCurrency(pagamento.valor)}</p>
                                                 {pagamento.diasAtraso > 0 && (
-                                                    <p className="text-xs text-red-600">
+                                                    <p className="text-xs text-red-400">
                                                         {pagamento.diasAtraso} dias de atraso
                                                     </p>
                                                 )}
