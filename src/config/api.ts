@@ -70,6 +70,36 @@ export const API_ENDPOINTS = {
         servicos: '/escritorio/servicos',
         configuracoes: '/escritorio/configuracoes',
     },
+    // Serviços
+    servicos: {
+        list: '/servicos',
+        detail: (id: number) => `/servicos/${id}`,
+        create: '/servicos',
+        update: (id: number) => `/servicos/${id}`,
+        delete: (id: number) => `/servicos/${id}`,
+        count: '/servicos/stats/count',
+        etapas: {
+            list: (servicoId: number) => `/servicos/${servicoId}/etapas`,
+            create: (servicoId: number) => `/servicos/${servicoId}/etapas`,
+            update: (servicoId: number, etapaId: number) => `/servicos/${servicoId}/etapas/${etapaId}`,
+            delete: (servicoId: number, etapaId: number) => `/servicos/${servicoId}/etapas/${etapaId}`,
+            tarefas: {
+                list: (servicoId: number, etapaId: number) => `/servicos/${servicoId}/etapas/${etapaId}/tarefas`,
+                create: (servicoId: number, etapaId: number) => `/servicos/${servicoId}/etapas/${etapaId}/tarefas`,
+                update: (servicoId: number, etapaId: number, tarefaId: number) => `/servicos/${servicoId}/etapas/${etapaId}/tarefas/${tarefaId}`,
+                delete: (servicoId: number, etapaId: number, tarefaId: number) => `/servicos/${servicoId}/etapas/${etapaId}/tarefas/${tarefaId}`,
+            },
+        },
+    },
+    // Tarefas (endpoints diretos)
+    tarefas: {
+        list: '/tarefas',
+        detail: (id: number) => `/tarefas/${id}`,
+        create: '/tarefas',
+        update: (id: number) => `/tarefas/${id}`,
+        delete: (id: number) => `/tarefas/${id}`,
+        count: '/tarefas/stats/count',
+    },
     // Administração (apenas admin do sistema)
     admin: {
         escritorios: {

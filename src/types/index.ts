@@ -91,17 +91,46 @@ export interface Status {
 export interface Servico {
     id: number;
     nome: string;
-    descricao: string;
+    descricao?: string;
+    descricao_contrato?: string;
+    valor_base?: number;
+    unidade?: string;
+    codigo_plano_contas?: string;
     ativo: boolean;
-    etapas: ServicoEtapa[];
+    escritorio_id: number;
+    created_at: string;
+    updated_at: string;
+    etapas?: Etapa[];
 }
 
-export interface ServicoEtapa {
+export interface Etapa {
     id: number;
+    servico_id: number;
     nome: string;
-    descricao: string;
+    descricao?: string;
     ordem: number;
+    obrigatoria: boolean; // exibir (invertido do legado)
+    escritorio_id: number;
+    created_at: string;
+    updated_at: string;
+    tarefas?: Tarefa[];
 }
+
+export interface Tarefa {
+    id: number;
+    etapa_id: number;
+    nome: string;
+    ordem: number;
+    cor?: string;
+    tem_prazo: boolean;
+    precisa_detalhamento: boolean;
+    escritorio_id: number;
+    created_at: string;
+    updated_at: string;
+}
+
+// Mantido para compatibilidade
+export interface ServicoEtapa extends Etapa {}
 
 export interface Proposta {
     id: number;

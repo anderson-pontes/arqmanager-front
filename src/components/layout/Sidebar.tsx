@@ -10,6 +10,7 @@ import {
     Building2,
     UserCog,
     Shield,
+    Briefcase,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -59,6 +60,11 @@ const baseMenuItems = [
         title: 'Escritório',
         icon: Building2,
         href: '/escritorio',
+    },
+    {
+        title: 'Serviços',
+        icon: Briefcase,
+        href: '/servicos',
     },
     {
         title: 'Configurações',

@@ -35,6 +35,7 @@ import { ViewEscritorioPage } from '@/pages/admin/ViewEscritorioPage';
 import { EditEscritorioPage } from '@/pages/admin/EditEscritorioPage';
 import { ViewSystemAdminPage } from '@/pages/admin/ViewSystemAdminPage';
 import { ViewEscritorioAdminPage } from '@/pages/admin/ViewEscritorioAdminPage';
+import { ServicosPage } from '@/pages/admin/servicos/ServicosPage';
 import TestIntegration from '@/pages/TestIntegration';
 
 export const router = createBrowserRouter([
@@ -169,6 +170,10 @@ export const router = createBrowserRouter([
             {
                 path: 'configuracoes',
                 element: <ConfiguracoesPage />,
+            },
+            {
+                path: 'servicos',
+                element: <ServicosPage />,
             },
             {
                 path: 'admin',
