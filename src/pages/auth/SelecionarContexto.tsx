@@ -95,7 +95,7 @@ export function SelecionarContexto() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-50 via-white to-purple-100">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-linear-to-br from-purple-50 via-white to-purple-100">
             <Card className="w-full max-w-3xl shadow-2xl">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -168,48 +168,29 @@ export function SelecionarContexto() {
                     {selectedMode === 'escritorio' && (
                         <div>
                             <Label className="text-base font-semibold mb-3 block">Escritório</Label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {escritorios.map((esc) => (
-                                <Card
-                                    key={esc.id}
-                                    className={`cursor-pointer transition-all hover:shadow-md ${
-                                        selectedEscritorio === esc.id
-                                            ? 'ring-2 ring-primary bg-primary/5'
-                                            : 'hover:bg-muted/50'
-                                    }`}
-                                    onClick={() => {
-                                        setSelectedEscritorio(esc.id);
-                                        // Se não for admin e tiver perfil definido, usar o perfil do escritório
-                                        if (!isSystemAdmin && esc.perfil) {
-                                            setSelectedPerfil(esc.perfil);
-                                        }
-                                    }}
-                                >
-                                    <CardContent className="p-4">
-                                        <div className="flex items-center gap-3">
-                                            <div
-                                                className="w-5 h-5 rounded-full flex-shrink-0"
-                                                style={{ backgroundColor: esc.cor || '#6366f1' }}
-                                            />
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-semibold truncate">{esc.nome_fantasia}</p>
-                                                <p className="text-sm text-muted-foreground truncate">
-                                                    {esc.razao_social}
-                                                </p>
-                                                {esc.perfil && !isSystemAdmin && (
-                                                    <p className="text-xs text-primary mt-1">
-                                                        Perfil: {esc.perfil}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            {selectedEscritorio === esc.id && (
-                                                <Check className="h-5 w-5 text-primary flex-shrink-0" />
-                                            )}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                        </div>
+                            <Select
+                                value={selectedEscritorio?.toString() || ''}
+                                onValueChange={(value) => {
+                                    const escritorioId = parseInt(value);
+                                    setSelectedEscritorio(escritorioId);
+                                    // Se não for admin e tiver perfil definido, usar o perfil do escritório
+                                    const escritorio = escritorios.find(esc => esc.id === escritorioId);
+                                    if (!isSystemAdmin && escritorio?.perfil) {
+                                        setSelectedPerfil(escritorio.perfil);
+                                    }
+                                }}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Selecione um escritório" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {escritorios.map((esc) => (
+                                        <SelectItem key={esc.id} value={esc.id.toString()}>
+                                            {esc.nome_fantasia}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     )}
 
