@@ -9,47 +9,17 @@ import { toast } from 'sonner';
 import { Building2, Check, Shield } from 'lucide-react';
 import type { EscritorioContextInfo } from '@/types';
 
-const PERFIS = ['Administrador', 'Coordenador de Projetos', 'Produção'];
+const PERFIS = ['Administrador', 'Coordenador de Projetos', 'Financeiro', 'Produção', 'Terceirizado'];
 
 export function SelecionarContexto() {
     const navigate = useNavigate();
     const { user, isSystemAdmin, setContext, setAdminMode, logout } = useAuthStore();
     const [escritorios, setEscritorios] = useState<EscritorioContextInfo[]>([]);
     const [selectedEscritorio, setSelectedEscritorio] = useState<number | null>(null);
-    const [selectedPerfil, setSelectedPerfil] = useState<string>('Produção');
+    const [selectedPerfil, setSelectedPerfil] = useState<string | null>(null);
     const [selectedMode, setSelectedMode] = useState<'escritorio' | 'admin'>('escritorio');
     const [loading, setLoading] = useState(false);
     const [loadingEscritorios, setLoadingEscritorios] = useState(true);
-
-    useEffect(() => {
-        if (!user) {
-            navigate('/login');
-            return;
-        }
-        loadEscritorios();
-    }, []);
-
-    const loadEscritorios = async () => {
-        setLoadingEscritorios(true);
-        try {
-            const { authService } = await import('@/api/services/auth.service');
-            const data = await authService.getAvailableEscritorios();
-            setEscritorios(data);
-            
-            // Se houver apenas um escritório, selecionar automaticamente
-            if (data.length === 1 && !isSystemAdmin) {
-                setSelectedEscritorio(data[0].id);
-                if (data[0].perfil) {
-                    setSelectedPerfil(data[0].perfil);
-                }
-            }
-        } catch (error) {
-            console.error('Erro ao carregar escritórios:', error);
-            toast.error('Erro ao carregar escritórios');
-        } finally {
-            setLoadingEscritorios(false);
-        }
-    };
 
     const handleConfirm = async () => {
         setLoading(true);
@@ -66,6 +36,11 @@ export function SelecionarContexto() {
                     setLoading(false);
                     return;
                 }
+                if (!selectedPerfil) {
+                    toast.error('Selecione um perfil');
+                    setLoading(false);
+                    return;
+                }
                 await setContext(selectedEscritorio, selectedPerfil);
                 toast.success('Contexto definido com sucesso!');
                 navigate('/dashboard');
@@ -75,6 +50,67 @@ export function SelecionarContexto() {
             toast.error(error?.response?.data?.detail || 'Erro ao definir contexto');
         } finally {
             setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+        loadEscritorios();
+    }, []);
+
+    const loadEscritorios = async () => {
+        setLoadingEscritorios(true);
+        try {
+            const { authService } = await import('@/api/services/auth.service');
+            const data = await authService.getAvailableEscritorios();
+            
+            console.log('📋 Escritórios disponíveis:', data);
+            console.log('📋 Perfis por escritório:', data.map(e => ({ id: e.id, nome: e.nome_fantasia, perfis: e.perfis })));
+            
+            setEscritorios(data);
+            
+            // Se houver apenas um escritório e não for admin do sistema
+            if (data.length === 1 && !isSystemAdmin) {
+                const escritorio = data[0];
+                setSelectedEscritorio(escritorio.id);
+                
+                console.log('📋 Escritório único selecionado:', escritorio);
+                console.log('📋 Perfis disponíveis:', escritorio.perfis);
+                
+                // Se tiver apenas um perfil, entrar direto
+                if (escritorio.perfis && escritorio.perfis.length === 1) {
+                    setSelectedPerfil(escritorio.perfis[0]);
+                    setSelectedEscritorio(escritorio.id);
+                    // Entrar automaticamente após um pequeno delay
+                    setTimeout(async () => {
+                        setLoading(true);
+                        try {
+                            await setContext(escritorio.id, escritorio.perfis[0]);
+                            toast.success('Contexto definido com sucesso!');
+                            navigate('/dashboard');
+                        } catch (error: any) {
+                            console.error('Erro ao definir contexto:', error);
+                            toast.error(error?.response?.data?.detail || 'Erro ao definir contexto');
+                        } finally {
+                            setLoading(false);
+                        }
+                    }, 500);
+                    return;
+                } else if (escritorio.perfis && escritorio.perfis.length > 0) {
+                    // Se tiver múltiplos perfis, selecionar o primeiro como padrão
+                    setSelectedPerfil(escritorio.perfis[0]);
+                } else {
+                    console.warn('⚠️ Nenhum perfil encontrado para o escritório:', escritorio);
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar escritórios:', error);
+            toast.error('Erro ao carregar escritórios');
+        } finally {
+            setLoadingEscritorios(false);
         }
     };
 
@@ -173,10 +209,16 @@ export function SelecionarContexto() {
                                 onValueChange={(value) => {
                                     const escritorioId = parseInt(value);
                                     setSelectedEscritorio(escritorioId);
-                                    // Se não for admin e tiver perfil definido, usar o perfil do escritório
+                                    // Buscar escritório selecionado
                                     const escritorio = escritorios.find(esc => esc.id === escritorioId);
-                                    if (!isSystemAdmin && escritorio?.perfil) {
-                                        setSelectedPerfil(escritorio.perfil);
+                                    if (escritorio) {
+                                        // Se não for admin e tiver perfis, usar o primeiro perfil
+                                        if (!isSystemAdmin && escritorio.perfis && escritorio.perfis.length > 0) {
+                                            setSelectedPerfil(escritorio.perfis[0]);
+                                        } else if (isSystemAdmin) {
+                                            // Admin pode escolher qualquer perfil
+                                            setSelectedPerfil(null);
+                                        }
                                     }
                                 }}
                             >
@@ -187,6 +229,11 @@ export function SelecionarContexto() {
                                     {escritorios.map((esc) => (
                                         <SelectItem key={esc.id} value={esc.id.toString()}>
                                             {esc.nome_fantasia}
+                                            {esc.perfis && esc.perfis.length > 0 && (
+                                                <span className="text-xs text-muted-foreground ml-2">
+                                                    ({esc.perfis.length} perfil{esc.perfis.length > 1 ? 's' : ''})
+                                                </span>
+                                            )}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -194,25 +241,50 @@ export function SelecionarContexto() {
                         </div>
                     )}
 
-                    {/* Seleção de Perfil (apenas para admin do sistema e modo escritório) */}
-                    {isSystemAdmin && selectedMode === 'escritorio' && (
+                    {/* Seleção de Perfil */}
+                    {selectedMode === 'escritorio' && selectedEscritorio && (
                         <div>
                             <Label className="text-base font-semibold mb-2 block">Perfil</Label>
-                            <Select value={selectedPerfil} onValueChange={setSelectedPerfil}>
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Selecione um perfil" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {PERFIS.map((perfil) => (
-                                        <SelectItem key={perfil} value={perfil}>
-                                            {perfil}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <p className="text-sm text-muted-foreground mt-2">
-                                Escolha o perfil que deseja simular neste escritório
-                            </p>
+                            {(() => {
+                                const escritorio = escritorios.find(esc => esc.id === selectedEscritorio);
+                                const perfisDisponiveis = escritorio?.perfis || [];
+                                
+                                // Se for admin do sistema, pode escolher qualquer perfil
+                                const perfisParaMostrar = isSystemAdmin ? PERFIS : perfisDisponiveis;
+                                
+                                if (perfisParaMostrar.length === 0) {
+                                    return (
+                                        <p className="text-sm text-muted-foreground">
+                                            Nenhum perfil disponível para este escritório
+                                        </p>
+                                    );
+                                }
+                                
+                                return (
+                                    <>
+                                        <Select 
+                                            value={selectedPerfil || ''} 
+                                            onValueChange={setSelectedPerfil}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Selecione um perfil" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {perfisParaMostrar.map((perfil) => (
+                                                    <SelectItem key={perfil} value={perfil}>
+                                                        {perfil}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <p className="text-sm text-muted-foreground mt-2">
+                                            {isSystemAdmin 
+                                                ? 'Escolha o perfil que deseja simular neste escritório'
+                                                : `Você possui ${perfisDisponiveis.length} perfil${perfisDisponiveis.length > 1 ? 's' : ''} neste escritório`}
+                                        </p>
+                                    </>
+                                );
+                            })()}
                         </div>
                     )}
 

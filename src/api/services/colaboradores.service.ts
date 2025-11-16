@@ -20,17 +20,29 @@ export interface Colaborador {
         nome_fantasia: string;
         razao_social: string;
     }>;
+    perfis?: ColaboradorPerfil[];
     created_at?: string;
     updated_at?: string;
+}
+
+export interface ColaboradorPerfil {
+    id: number;
+    colaborador_id: number;
+    escritorio_id: number;
+    perfil: string;
+    ativo: boolean;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface ColaboradorCreate {
     nome: string;
     email: string;
-    cpf: string;
+    cpf?: string;
     telefone?: string;
     data_nascimento?: string;
-    perfil: 'Admin' | 'Gerente' | 'Colaborador';
+    perfil?: string; // Mantido para compatibilidade
+    perfis?: string[]; // Múltiplos perfis
     tipo: 'Geral' | 'Terceirizado';
     senha: string;
     tipo_pix?: string;
@@ -123,6 +135,24 @@ class ColaboradoresService {
             `${baseUrl}/stats/count`
         );
         return response.data.total;
+    }
+
+    async getPerfis(id: number): Promise<ColaboradorPerfil[]> {
+        const response = await apiClient.get<ColaboradorPerfil[]>(
+            `${API_ENDPOINTS.colaboradores.detail(id)}/perfis`
+        );
+        return response.data;
+    }
+
+    async updatePerfis(id: number, escritorioId: number, perfis: string[]): Promise<ColaboradorPerfil[]> {
+        const response = await apiClient.put<ColaboradorPerfil[]>(
+            `${API_ENDPOINTS.colaboradores.detail(id)}/perfis`,
+            {
+                escritorio_id: escritorioId,
+                perfis: perfis
+            }
+        );
+        return response.data;
     }
 }
 

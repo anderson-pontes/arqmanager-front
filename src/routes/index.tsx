@@ -36,6 +36,8 @@ import { EditEscritorioPage } from '@/pages/admin/EditEscritorioPage';
 import { ViewSystemAdminPage } from '@/pages/admin/ViewSystemAdminPage';
 import { ViewEscritorioAdminPage } from '@/pages/admin/ViewEscritorioAdminPage';
 import { ServicosPage } from '@/pages/admin/servicos/ServicosPage';
+import { EtapasPage } from '@/pages/admin/servicos/EtapasPage';
+import { EtapaFormPage } from '@/pages/admin/servicos/EtapaFormPage';
 import TestIntegration from '@/pages/TestIntegration';
 
 export const router = createBrowserRouter([
@@ -174,6 +176,18 @@ export const router = createBrowserRouter([
             {
                 path: 'servicos',
                 element: <ServicosPage />,
+            },
+            {
+                path: 'servicos/etapas',
+                element: <EtapasPage />,
+            },
+            {
+                path: 'servicos/etapas/novo',
+                element: <EtapaFormPage />,
+            },
+            {
+                path: 'servicos/etapas/:id/editar',
+                element: <EtapaFormPage />,
             },
             {
                 path: 'admin',

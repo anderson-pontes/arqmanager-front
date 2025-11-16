@@ -208,10 +208,12 @@ export function ColaboradoresList() {
         return (
             <div>
                 <PageHeader title="Colaboradores" description="Gerencie os colaboradores do escritório" />
-                <SkeletonCard hasHeader={false} lines={1} className="mb-6" />
-                <SkeletonCard>
+                <div className="mb-6">
+                    <SkeletonCard hasHeader={false} lines={1} />
+                </div>
+                <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg">
                     <SkeletonTable columns={5} rows={5} />
-                </SkeletonCard>
+                </Card>
             </div>
         );
     }
@@ -338,7 +340,17 @@ export function ColaboradoresList() {
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant="outline">{colaborador.perfil || 'Colaborador'}</Badge>
+                                        <div className="flex flex-wrap gap-1">
+                                            {colaborador.perfis && colaborador.perfis.length > 0 ? (
+                                                colaborador.perfis.map((perfilItem) => (
+                                                    <Badge key={perfilItem.id} variant="outline">
+                                                        {perfilItem.perfil}
+                                                    </Badge>
+                                                ))
+                                            ) : (
+                                                <Badge variant="outline">{colaborador.perfil || 'Colaborador'}</Badge>
+                                            )}
+                                        </div>
                                     </TableCell>
                                     <TableCell>
                                         {colaborador.ativo ? (

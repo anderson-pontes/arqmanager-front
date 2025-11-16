@@ -22,7 +22,7 @@ import {
     Shield,
     KeyRound,
 } from 'lucide-react';
-import { colaboradoresService, type Colaborador } from '@/api/services/colaboradores.service';
+import { colaboradoresService, type Colaborador, type ColaboradorPerfil } from '@/api/services/colaboradores.service';
 import { getInitials, formatPhone, formatCPF, formatDate } from '@/utils/formatters';
 import { toast } from 'sonner';
 import { SkeletonCard } from '@/components/common/SkeletonCard';
@@ -41,6 +41,7 @@ export function ColaboradorDetail() {
     const navigate = useNavigate();
     const { id } = useParams();
     const [colaborador, setColaborador] = useState<Colaborador | null>(null);
+    const [perfis, setPerfis] = useState<ColaboradorPerfil[]>([]);
     const [loading, setLoading] = useState(true);
     const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
     const [newPassword, setNewPassword] = useState('');
@@ -49,6 +50,7 @@ export function ColaboradorDetail() {
         if (id) {
             fetchColaborador();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const fetchColaborador = async () => {
@@ -56,6 +58,33 @@ export function ColaboradorDetail() {
             setLoading(true);
             const data = await colaboradoresService.getById(Number(id));
             setColaborador(data);
+            
+            // Buscar todos os perfis do colaborador
+            try {
+                const perfisData = await colaboradoresService.getPerfis(Number(id));
+                console.log('Perfis recebidos do backend:', perfisData);
+                // Garantir que não há duplicatas baseadas no ID
+                const perfisUnicos = perfisData.filter((perfil, index, self) => 
+                    index === self.findIndex(p => p.id === perfil.id)
+                );
+                console.log('Perfis únicos após filtro:', perfisUnicos);
+                setPerfis(perfisUnicos || []);
+            } catch (err: any) {
+                console.error('Erro ao buscar perfis:', err);
+                // Se for erro 404, o colaborador não está vinculado ao escritório, mas isso é ok
+                // Se for erro 500, pode ser um problema temporário, então apenas logamos
+                if (err.response?.status === 404) {
+                    // Colaborador não tem perfis neste escritório, usar perfil padrão
+                    setPerfis([]);
+                } else if (err.response?.status === 500) {
+                    // Erro do servidor, logar mas não bloquear a visualização
+                    console.error('Erro ao buscar perfis (erro 500):', err.response?.data);
+                    setPerfis([]);
+                } else {
+                    // Outros erros
+                    setPerfis([]);
+                }
+            }
         } catch (error: any) {
             console.error('Erro ao buscar colaborador:', error);
             toast.error('Erro ao carregar dados do colaborador');
@@ -161,19 +190,19 @@ export function ColaboradorDetail() {
                                     <h2 className="text-2xl font-bold">
                                         {colaborador.nome}
                                     </h2>
-                                    <div className="flex gap-2 mt-2">
-                                        <Badge variant="outline">
-                                            {colaborador.perfil || 'Colaborador'}
-                                        </Badge>
-                                        {colaborador.tipo && (
-                                            <Badge
-                                                className={
-                                                    colaborador.tipo === 'Geral'
-                                                        ? 'bg-blue-500'
-                                                        : 'bg-orange-500'
-                                                }
-                                            >
-                                                {colaborador.tipo}
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {perfis.length > 0 ? (
+                                            perfis.map((perfilItem, index) => {
+                                                console.log(`Renderizando perfil ${index}:`, perfilItem);
+                                                return (
+                                                    <Badge key={`${perfilItem.id}-${index}`} variant="outline">
+                                                        {perfilItem.perfil}
+                                                    </Badge>
+                                                );
+                                            })
+                                        ) : (
+                                            <Badge variant="outline">
+                                                {colaborador.perfil || 'Colaborador'}
                                             </Badge>
                                         )}
                                     </div>
@@ -294,28 +323,24 @@ export function ColaboradorDetail() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {colaborador.tipo && (
-                            <>
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Tipo</p>
-                                    <Badge
-                                        className={
-                                            colaborador.tipo === 'Geral'
-                                                ? 'bg-blue-500 mt-1'
-                                                : 'bg-orange-500 mt-1'
-                                        }
-                                    >
-                                        {colaborador.tipo}
-                                    </Badge>
-                                </div>
-                                <Separator />
-                            </>
-                        )}
                         <div>
-                            <p className="text-sm text-muted-foreground">Perfil de Acesso</p>
-                            <Badge variant="outline" className="mt-1">
-                                {colaborador.perfil}
-                            </Badge>
+                            <p className="text-sm text-muted-foreground mb-2">Perfis de Acesso</p>
+                            {perfis.length > 0 ? (
+                                <div className="flex flex-wrap gap-2">
+                                    {perfis.map((perfilItem, index) => {
+                                        console.log(`Renderizando perfil no card Sistema ${index}:`, perfilItem);
+                                        return (
+                                            <Badge key={`sistema-${perfilItem.id}-${index}`} variant="outline">
+                                                {perfilItem.perfil}
+                                            </Badge>
+                                        );
+                                    })}
+                                </div>
+                            ) : (
+                                <Badge variant="outline">
+                                    {colaborador.perfil || 'Nenhum perfil atribuído'}
+                                </Badge>
+                            )}
                         </div>
                         <Separator />
                         <div>

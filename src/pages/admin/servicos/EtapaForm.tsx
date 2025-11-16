@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -26,9 +26,13 @@ import { Switch } from '@/components/ui/switch';
 import type { Servico, Etapa } from '@/types';
 import type { EtapaCreate, EtapaUpdate } from '@/api/services/servico.service';
 
+// Usar TinyMCE Editor
+import { TinyMCEEditor } from '@/components/ui/tinymce-editor';
+
 const etapaSchema = z.object({
     nome: z.string().min(1, 'Nome é obrigatório').max(500, 'Nome muito longo'),
     descricao: z.string().optional(),
+    descricao_contrato: z.string().optional(),
     ordem: z.number().int().min(0, 'Ordem deve ser um número positivo'),
     obrigatoria: z.boolean().default(true),
 });
@@ -57,6 +61,7 @@ export function EtapaForm({
         defaultValues: {
             nome: '',
             descricao: '',
+            descricao_contrato: '',
             ordem: 0,
             obrigatoria: true,
         },
@@ -67,6 +72,7 @@ export function EtapaForm({
             form.reset({
                 nome: etapa.nome,
                 descricao: etapa.descricao || '',
+                descricao_contrato: etapa.descricao_contrato || '',
                 ordem: etapa.ordem,
                 obrigatoria: etapa.obrigatoria,
             });
@@ -74,6 +80,7 @@ export function EtapaForm({
             form.reset({
                 nome: '',
                 descricao: '',
+                descricao_contrato: '',
                 ordem: 0,
                 obrigatoria: true,
             });
@@ -87,7 +94,7 @@ export function EtapaForm({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
                         {etapa ? 'Editar Etapa' : 'Nova Etapa'}
@@ -181,6 +188,28 @@ export function EtapaForm({
                                             {...field}
                                         />
                                     </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="descricao_contrato"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Descrição para Contrato</FormLabel>
+                                    <FormControl>
+                                        <TinyMCEEditor
+                                            content={field.value || ''}
+                                            onChange={field.onChange}
+                                            placeholder="Digite a descrição que aparecerá no contrato..."
+                                            className="min-h-[300px]"
+                                        />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Esta descrição será usada nos contratos. Use formatação rica (negrito, itálico, listas).
+                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}

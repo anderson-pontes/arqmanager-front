@@ -38,14 +38,11 @@ export function Login() {
     });
 
     const onSubmit = async (data: LoginForm) => {
-        console.log('🔐 Login iniciado com:', data);
         setLoading(true);
         try {
             // ✅ Login real com backend
             const { authService } = await import('@/api/services/auth.service');
             const response = await authService.login(data);
-
-            console.log('✅ Login bem-sucedido:', response.user);
 
             // Salva tokens
             authService.saveTokens(response.access_token, response.refresh_token);
@@ -64,7 +61,8 @@ export function Login() {
                         razaoSocial: e.razao_social,
                         cor: e.cor
                     },
-                    perfil: e.perfil || 'Colaborador',
+                    perfil: e.perfis && e.perfis.length > 0 ? e.perfis[0] : 'Produção', // Compatibilidade
+                    perfis: e.perfis || ['Produção'], // Múltiplos perfis
                     ativo: true,
                     dataVinculo: new Date().toISOString()
                 })),
@@ -85,38 +83,57 @@ export function Login() {
 
             // Redirecionar baseado no contexto
             if (response.requires_escritorio_selection || response.is_system_admin) {
-                console.log('🚀 Redirecionando para seleção de contexto...');
                 navigate('/selecionar-contexto');
             } else {
                 // Usuário comum com 1 escritório: definir automaticamente
                 if (user.escritorios.length === 1) {
                     const escritorio = user.escritorios[0];
-                    try {
-                        await setContext(escritorio.escritorio.id, escritorio.perfil);
-                    } catch (error) {
-                        console.error('Erro ao definir contexto automático:', error);
+                    // Se tiver apenas um perfil, entrar direto
+                    if (escritorio.perfis && escritorio.perfis.length === 1) {
+                        try {
+                            await setContext(escritorio.escritorio.id, escritorio.perfis[0]);
+                            navigate('/dashboard');
+                            return;
+                        } catch (error) {
+                            console.error('Erro ao definir contexto automático:', error);
+                        }
+                    } else {
+                        // Se tiver múltiplos perfis, ir para seleção
+                        navigate('/selecionar-contexto');
+                        return;
                     }
                 }
-                console.log('🚀 Redirecionando para dashboard...');
                 navigate('/dashboard');
             }
         } catch (error: any) {
-            console.error('❌ Erro no login:', error);
-
-            // Trata erros específicos
+            // Trata erros específicos com mensagens claras
             let errorMessage = 'Erro ao fazer login. Verifique suas credenciais.';
 
-            if (error.response?.data?.detail) {
-                const detail = error.response.data.detail;
+            // Verificar diferentes formatos de resposta de erro
+            const detail = error.response?.data?.detail || error.response?.data?.message || error.message || '';
+            
+            if (detail) {
                 if (typeof detail === 'string') {
-                    errorMessage = detail;
+                    // Mensagens específicas do backend
+                    const detailLower = detail.toLowerCase();
+                    
+                    if (detailLower.includes('email não encontrado') || detailLower.includes('email nao encontrado')) {
+                        errorMessage = 'Email não encontrado. Verifique o email informado.';
+                    } else if (detailLower.includes('senha incorreta')) {
+                        errorMessage = 'Senha incorreta. Verifique a senha informada.';
+                    } else if (detailLower.includes('inativo')) {
+                        errorMessage = 'Usuário inativo. Entre em contato com o administrador.';
+                    } else if (detailLower.includes('escritório') || detailLower.includes('escritorio')) {
+                        errorMessage = detail;
+                    } else {
+                        errorMessage = detail;
+                    }
                 } else if (Array.isArray(detail)) {
-                    errorMessage = detail.map((e: any) => e.msg).join(', ');
+                    errorMessage = detail.map((e: any) => e.msg || e.message || e).join(', ');
                 }
-            } else if (error.message) {
-                errorMessage = error.message;
             }
 
+            // Exibir toast de erro
             toast.error(errorMessage);
         } finally {
             setLoading(false);

@@ -1,8 +1,8 @@
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useEffect, useState } from 'react';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,34 +22,49 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
-import { colaboradoresService } from '@/api/services/colaboradores.service';
 import { Save, X } from 'lucide-react';
-import { maskCPF, maskPhone } from '@/utils/masks';
+import { maskCPF, maskPhone, unmask } from '@/utils/masks';
+import { colaboradoresService, type Colaborador } from '@/api/services/colaboradores.service';
+import { useAuthStore } from '@/store/authStore';
+import { SkeletonCard } from '@/components/common/SkeletonCard';
 
 const colaboradorSchema = z.object({
     nome: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
     email: z.string().email('Email inválido'),
-    cpf: z.string().optional().refine((val) => !val || val.length === 0 || (val.replace(/\D/g, '').length === 11), {
-        message: 'CPF deve ter 11 dígitos'
-    }),
-    telefone: z.string().optional(),
-    data_nascimento: z.string().optional(),
-    perfil: z.enum(['Administrador', 'Coordenador de Projetos', 'Produção']),
-    tipo: z.enum(['Geral', 'Terceirizado']),
+    cpf: z.string().min(14, 'CPF inválido').max(14, 'CPF inválido'),
+    telefone: z.string().min(14, 'Telefone inválido'),
+    dataNascimento: z.string().min(1, 'Data de nascimento é obrigatória'),
     ativo: z.boolean(),
     senha: z.string().optional(),
-    // Dados Bancários (opcionais por enquanto)
-    tipo_pix: z.string().optional(),
-    chave_pix: z.string().optional(),
+    // Dados Bancários
+    socio: z.string().min(1, 'Selecione se é sócio'),
+    tipoPix: z.string().min(1, 'Tipo de chave PIX é obrigatório'),
+    chavePix: z.string().min(1, 'Chave PIX é obrigatória'),
+    // Perfis
+    perfis: z.array(z.string()).min(1, 'Selecione pelo menos um perfil'),
 });
 
 type ColaboradorForm = z.infer<typeof colaboradorSchema>;
+
+const PERFIS_DISPONIVEIS = [
+    'Administrador',
+    'Coordenador de Projetos',
+    'Financeiro',
+    'Produção',
+    'Terceirizado',
+];
 
 export function ColaboradorForm() {
     const navigate = useNavigate();
     const { id } = useParams();
     const isEdit = !!id;
+    const { currentContext } = useAuthStore();
+    const escritorioId = currentContext.escritorioId;
+
+    const [colaborador, setColaborador] = useState<Colaborador | null>(null);
+    const [perfisSelecionados, setPerfisSelecionados] = useState<string[]>([]);
     const [loading, setLoading] = useState(isEdit);
 
     const {
@@ -62,40 +77,48 @@ export function ColaboradorForm() {
         resolver: zodResolver(colaboradorSchema),
         defaultValues: {
             ativo: true,
-            perfil: 'Produção',
-            tipo: 'Geral',
-            tipo_pix: '',
-            chave_pix: '',
+            perfis: [],
         },
     });
 
-    const perfil = watch('perfil');
-    const tipo = watch('tipo');
-    const tipoPix = watch('tipo_pix');
+    const ativo = watch('ativo');
 
-    // Buscar colaborador se for edição
     useEffect(() => {
         if (isEdit && id) {
             fetchColaborador();
         }
-    }, [isEdit, id]);
+    }, [id, isEdit]);
 
     const fetchColaborador = async () => {
         try {
             setLoading(true);
-            const colaborador = await colaboradoresService.getById(Number(id));
-            
-            // Preencher formulário com dados do colaborador
-            setValue('nome', colaborador.nome);
-            setValue('email', colaborador.email);
-            setValue('cpf', colaborador.cpf);
-            setValue('telefone', colaborador.telefone || '');
-            setValue('data_nascimento', colaborador.data_nascimento || '');
-            setValue('perfil', colaborador.perfil);
-            setValue('tipo', colaborador.tipo);
-            setValue('ativo', colaborador.ativo);
-            setValue('tipo_pix', colaborador.tipo_pix || '');
-            setValue('chave_pix', colaborador.chave_pix || '');
+            const data = await colaboradoresService.getById(Number(id));
+            setColaborador(data);
+
+            // Buscar perfis do colaborador
+            try {
+                const perfisData = await colaboradoresService.getPerfis(Number(id));
+                const perfisAtivos = perfisData
+                    .filter(p => p.ativo)
+                    .map(p => p.perfil);
+                setPerfisSelecionados(perfisAtivos);
+                setValue('perfis', perfisAtivos);
+            } catch (err) {
+                console.error('Erro ao buscar perfis:', err);
+            }
+
+            // Preencher formulário
+            setValue('nome', data.nome);
+            setValue('email', data.email);
+            // Aplicar máscara no CPF se existir
+            setValue('cpf', data.cpf ? maskCPF(data.cpf) : '');
+            // Aplicar máscara no telefone se existir
+            setValue('telefone', data.telefone ? maskPhone(data.telefone) : '');
+            setValue('dataNascimento', data.data_nascimento ? data.data_nascimento.split('T')[0] : '');
+            setValue('ativo', data.ativo);
+            setValue('tipoPix', data.tipo_pix || '');
+            setValue('chavePix', data.chave_pix || '');
+            setValue('socio', 'nao'); // TODO: buscar do backend se existir
         } catch (error: any) {
             console.error('Erro ao buscar colaborador:', error);
             toast.error('Erro ao carregar dados do colaborador');
@@ -105,54 +128,79 @@ export function ColaboradorForm() {
         }
     };
 
-    const ativo = watch('ativo');
+    const handlePerfilToggle = (perfil: string) => {
+        const novosPerfis = perfisSelecionados.includes(perfil)
+            ? perfisSelecionados.filter(p => p !== perfil)
+            : [...perfisSelecionados, perfil];
+        
+        setPerfisSelecionados(novosPerfis);
+        setValue('perfis', novosPerfis);
+    };
 
     const onSubmit = async (data: ColaboradorForm) => {
-        try {
-            // Remover máscaras do CPF
-            const cpfLimpo = data.cpf.replace(/\D/g, '');
-            
-            if (isEdit && id) {
-                // Atualizar
-                const updateData = {
-                    nome: data.nome,
-                    email: data.email,
-                    telefone: data.telefone,
-                    data_nascimento: data.data_nascimento || undefined,
-                    perfil: data.perfil,
-                    tipo: data.tipo,
-                    ativo: data.ativo,
-                    tipo_pix: data.tipo_pix || undefined,
-                    chave_pix: data.chave_pix || undefined,
-                    foto: undefined, // TODO: Implementar upload de foto
-                };
-                await colaboradoresService.update(Number(id), updateData);
-            } else {
-                // Criar
-                if (!data.senha) {
-                    toast.error('Senha é obrigatória para novos colaboradores');
-                    return;
-                }
-                const createData = {
-                    nome: data.nome,
-                    email: data.email,
-                    cpf: cpfLimpo && cpfLimpo.length === 11 ? cpfLimpo : undefined,
-                    telefone: data.telefone || undefined,
-                    data_nascimento: data.data_nascimento || undefined,
-                    perfil: data.perfil,
-                    tipo: data.tipo,
-                    senha: data.senha!,
-                    tipo_pix: data.tipo_pix || undefined,
-                    chave_pix: data.chave_pix || undefined,
-                };
-                await colaboradoresService.create(createData);
-            }
+        if (!escritorioId) {
+            toast.error('Escritório não selecionado');
+            return;
+        }
 
-            toast.success(
-                isEdit
-                    ? 'Colaborador atualizado com sucesso!'
-                    : 'Colaborador cadastrado com sucesso!'
-            );
+        try {
+            if (isEdit && id) {
+                // Atualizar colaborador
+                const updateData: any = {
+                    nome: data.nome,
+                    email: data.email,
+                    cpf: data.cpf ? unmask(data.cpf) : undefined,
+                    telefone: data.telefone ? unmask(data.telefone) : undefined,
+                    data_nascimento: data.dataNascimento,
+                    ativo: data.ativo,
+                    tipo_pix: data.tipoPix,
+                    chave_pix: data.chavePix,
+                };
+
+                if (data.senha) {
+                    updateData.senha = data.senha;
+                }
+
+                await colaboradoresService.update(Number(id), updateData);
+
+                // Atualizar perfis
+                if (data.perfis && data.perfis.length > 0) {
+                    await colaboradoresService.updatePerfis(
+                        Number(id),
+                        escritorioId,
+                        data.perfis
+                    );
+                }
+
+                toast.success('Colaborador atualizado com sucesso!');
+            } else {
+                // Criar novo colaborador
+                const createData: any = {
+                    nome: data.nome,
+                    email: data.email,
+                    cpf: data.cpf ? unmask(data.cpf) : undefined,
+                    telefone: data.telefone ? unmask(data.telefone) : undefined,
+                    data_nascimento: data.dataNascimento,
+                    tipo: 'Geral', // Mantido para compatibilidade com backend
+                    senha: data.senha || '',
+                    tipo_pix: data.tipoPix,
+                    chave_pix: data.chavePix,
+                    perfis: data.perfis,
+                };
+
+                const novoColaborador = await colaboradoresService.create(createData);
+
+                // Atualizar perfis
+                if (data.perfis && data.perfis.length > 0 && escritorioId) {
+                    await colaboradoresService.updatePerfis(
+                        novoColaborador.id,
+                        escritorioId,
+                        data.perfis
+                    );
+                }
+
+                toast.success('Colaborador cadastrado com sucesso!');
+            }
 
             navigate('/colaboradores');
         } catch (err: any) {
@@ -165,11 +213,8 @@ export function ColaboradorForm() {
     if (loading) {
         return (
             <div>
-                <PageHeader
-                    title="Editar Colaborador"
-                    description="Carregando dados..."
-                    showBack
-                />
+                <PageHeader title={isEdit ? 'Editar Colaborador' : 'Novo Colaborador'} showBack />
+                <SkeletonCard lines={10} />
             </div>
         );
     }
@@ -214,33 +259,6 @@ export function ColaboradorForm() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="tipo">
-                                    Tipo <span className="text-destructive">*</span>
-                                </Label>
-                                <Select
-                                    value={tipo}
-                                    onValueChange={(value) =>
-                                        setValue('tipo', value as 'Geral' | 'Terceirizado')
-                                    }
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Selecione o tipo" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Geral">Geral</SelectItem>
-                                        <SelectItem value="Terceirizado">
-                                            Terceirizado
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                {errors.tipo && (
-                                    <p className="text-sm text-destructive">
-                                        {errors.tipo.message}
-                                    </p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
                                 <Label htmlFor="cpf">
                                     CPF <span className="text-destructive">*</span>
                                 </Label>
@@ -262,17 +280,18 @@ export function ColaboradorForm() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="data_nascimento">
-                                    Data de Nascimento
+                                <Label htmlFor="dataNascimento">
+                                    Data de Nascimento{' '}
+                                    <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
-                                    id="data_nascimento"
+                                    id="dataNascimento"
                                     type="date"
-                                    {...register('data_nascimento')}
+                                    {...register('dataNascimento')}
                                 />
-                                {errors.data_nascimento && (
+                                {errors.dataNascimento && (
                                     <p className="text-sm text-destructive">
-                                        {errors.data_nascimento.message}
+                                        {errors.dataNascimento.message}
                                     </p>
                                 )}
                             </div>
@@ -307,7 +326,7 @@ export function ColaboradorForm() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="telefone">
-                                    Telefone
+                                    Telefone <span className="text-destructive">*</span>
                                 </Label>
                                 <Input
                                     id="telefone"
@@ -328,26 +347,49 @@ export function ColaboradorForm() {
                         </CardContent>
                     </Card>
 
-                    {/* Dados Bancários (Opcional por enquanto) */}
+                    {/* Dados Bancários */}
                     <Card className="backdrop-blur-sm bg-white/80 border-purple-100/50 shadow-lg md:col-span-2">
                         <CardHeader>
-                            <CardTitle>Dados Bancários (Opcional)</CardTitle>
+                            <CardTitle>Dados Bancários</CardTitle>
                             <CardDescription>
                                 Informações para pagamentos
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="grid gap-4 md:grid-cols-2">
+                            <div className="grid gap-4 md:grid-cols-3">
                                 <div className="space-y-2">
-                                    <Label htmlFor="tipo_pix">
-                                        Tipo Pix
+                                    <Label htmlFor="socio">
+                                        Sócio <span className="text-destructive">*</span>
                                     </Label>
                                     <Select
-                                        value={tipoPix || ''}
-                                        onValueChange={(value) => setValue('tipo_pix', value)}
+                                        onValueChange={(value) => setValue('socio', value)}
+                                        defaultValue={colaborador ? 'nao' : undefined}
                                     >
                                         <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Selecione o tipo" />
+                                            <SelectValue placeholder="Selecione" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="sim">Sim</SelectItem>
+                                            <SelectItem value="nao">Não</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    {errors.socio && (
+                                        <p className="text-sm text-destructive">
+                                            {errors.socio.message}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="tipoPix">
+                                        Tipo Pix <span className="text-destructive">*</span>
+                                    </Label>
+                                    <Select
+                                        onValueChange={(value) => setValue('tipoPix', value)}
+                                        defaultValue={colaborador?.tipo_pix}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Selecione" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="email">Email</SelectItem>
@@ -359,17 +401,27 @@ export function ColaboradorForm() {
                                             </SelectItem>
                                         </SelectContent>
                                     </Select>
+                                    {errors.tipoPix && (
+                                        <p className="text-sm text-destructive">
+                                            {errors.tipoPix.message}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="chave_pix">
-                                        Chave PIX
+                                    <Label htmlFor="chavePix">
+                                        Chave PIX <span className="text-destructive">*</span>
                                     </Label>
                                     <Input
-                                        id="chave_pix"
+                                        id="chavePix"
                                         placeholder="Chave PIX"
-                                        {...register('chave_pix')}
+                                        {...register('chavePix')}
                                     />
+                                    {errors.chavePix && (
+                                        <p className="text-sm text-destructive">
+                                            {errors.chavePix.message}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </CardContent>
@@ -384,33 +436,35 @@ export function ColaboradorForm() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="grid gap-4 md:grid-cols-2">
+                            <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="perfil">
-                                        Perfil <span className="text-destructive">*</span>
+                                    <Label>
+                                        Perfis <span className="text-destructive">*</span>
                                     </Label>
-                                    <Select
-                                        value={perfil}
-                                        onValueChange={(value) => setValue('perfil', value as 'Administrador' | 'Coordenador de Projetos' | 'Produção')}
-                                    >
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Selecione o perfil" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Administrador">
-                                                Administrador
-                                            </SelectItem>
-                                            <SelectItem value="Coordenador de Projetos">
-                                                Coordenador de Projetos
-                                            </SelectItem>
-                                            <SelectItem value="Produção">
-                                                Produção
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.perfil && (
+                                    <div className="grid gap-3 md:grid-cols-2">
+                                        {PERFIS_DISPONIVEIS.map((perfil) => (
+                                            <div
+                                                key={perfil}
+                                                className="flex items-center space-x-2 rounded-lg border p-3 hover:bg-gray-50"
+                                            >
+                                                <Checkbox
+                                                    id={`perfil-${perfil}`}
+                                                    checked={perfisSelecionados.includes(perfil)}
+                                                    onCheckedChange={() => handlePerfilToggle(perfil)}
+                                                    className="border-2 border-gray-300 data-[state=unchecked]:bg-gray-50 data-[state=unchecked]:hover:bg-gray-100 data-[state=unchecked]:hover:border-gray-400"
+                                                />
+                                                <Label
+                                                    htmlFor={`perfil-${perfil}`}
+                                                    className="flex-1 cursor-pointer font-normal"
+                                                >
+                                                    {perfil}
+                                                </Label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {errors.perfis && (
                                         <p className="text-sm text-destructive">
-                                            {errors.perfil.message}
+                                            {errors.perfis.message}
                                         </p>
                                     )}
                                 </div>
@@ -424,8 +478,10 @@ export function ColaboradorForm() {
                                         <Input
                                             id="senha"
                                             type="password"
-                                            placeholder="Senha inicial (mínimo 6 caracteres)"
-                                            {...register('senha', { required: !isEdit })}
+                                            placeholder="Senha inicial"
+                                            {...register('senha', {
+                                                required: !isEdit ? 'Senha é obrigatória' : false,
+                                            })}
                                         />
                                         {errors.senha && (
                                             <p className="text-sm text-destructive">

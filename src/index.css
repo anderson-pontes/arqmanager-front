@@ -121,3 +121,72 @@
     @apply bg-gray-100 text-gray-800;
   }
 }
+
+/* Estilos para Toast Notifications - Sonner */
+@layer components {
+  /* Toast de Sucesso - Verde */
+  .toast-success,
+  [data-sonner-toast][data-type="success"],
+  [data-sonner-toast].success {
+    background-color: #10b981 !important;
+    color: #ffffff !important;
+    border-color: #059669 !important;
+  }
+  
+  .toast-success [data-icon],
+  [data-sonner-toast][data-type="success"] [data-icon],
+  [data-sonner-toast].success [data-icon] {
+    color: #ffffff !important;
+  }
+
+  /* Toast de Erro - Vermelho */
+  .toast-error,
+  [data-sonner-toast][data-type="error"],
+  [data-sonner-toast].error {
+    background-color: #ef4444 !important;
+    color: #ffffff !important;
+    border-color: #dc2626 !important;
+  }
+  
+  .toast-error [data-icon],
+  [data-sonner-toast][data-type="error"] [data-icon],
+  [data-sonner-toast].error [data-icon] {
+    color: #ffffff !important;
+  }
+
+  /* Toast de Aviso - Amarelo/Laranja */
+  .toast-warning,
+  [data-sonner-toast][data-type="warning"],
+  [data-sonner-toast].warning {
+    background-color: #f59e0b !important;
+    color: #ffffff !important;
+    border-color: #d97706 !important;
+  }
+  
+  .toast-warning [data-icon],
+  [data-sonner-toast][data-type="warning"] [data-icon],
+  [data-sonner-toast].warning [data-icon] {
+    color: #ffffff !important;
+  }
+
+  /* Toast de Informação - Azul */
+  .toast-info,
+  [data-sonner-toast][data-type="info"],
+  [data-sonner-toast].info {
+    background-color: #3b82f6 !important;
+    color: #ffffff !important;
+    border-color: #2563eb !important;
+  }
+  
+  .toast-info [data-icon],
+  [data-sonner-toast][data-type="info"] [data-icon],
+  [data-sonner-toast].info [data-icon] {
+    color: #ffffff !important;
+  }
+
+  /* Estilos globais para toasts Sonner */
+  [data-sonner-toast] {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    font-weight: 500;
+  }
+}

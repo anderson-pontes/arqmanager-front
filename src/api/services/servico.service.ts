@@ -19,6 +19,7 @@ export interface ServicoUpdate extends Partial<ServicoCreate> {}
 export interface EtapaCreate {
     nome: string;
     descricao?: string;
+    descricao_contrato?: string;  // HTML/rich text para contrato
     ordem: number;
     obrigatoria?: boolean;
 }

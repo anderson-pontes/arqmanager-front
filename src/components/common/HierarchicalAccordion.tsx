@@ -31,7 +31,6 @@ export function HierarchicalAccordion({
     onAddServico,
     onEditServico,
     onDeleteServico,
-    onReorderServico,
     onAddEtapa,
     onEditEtapa,
     onDeleteEtapa,
@@ -327,7 +326,7 @@ export function HierarchicalAccordion({
                                                                                     <div className="flex items-center gap-2 flex-1">
                                                                                         {tarefa.cor && (
                                                                                             <div
-                                                                                                className="w-3 h-3 rounded-full flex-shrink-0"
+                                                                                                className="w-3 h-3 rounded-full shrink-0"
                                                                                                 style={{
                                                                                                     backgroundColor:
                                                                                                         tarefa.cor,

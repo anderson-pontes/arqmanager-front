@@ -25,7 +25,7 @@ export interface LoginResponse {
         nome_fantasia: string;
         razao_social: string;
         cor: string;
-        perfil?: string | null;
+        perfis: string[];
     }>;
 }
 

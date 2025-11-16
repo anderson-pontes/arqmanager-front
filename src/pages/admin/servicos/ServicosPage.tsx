@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, X, Filter, Download, Upload, ArrowUp, ArrowDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Search, X, Filter, Download, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,7 +16,6 @@ import { PageHeader } from '@/components/common/PageHeader';
 import { HierarchicalAccordion } from '@/components/common/HierarchicalAccordion';
 import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 import { ServicoForm } from './ServicoForm';
-import { EtapaForm } from './EtapaForm';
 import { TarefaForm } from './TarefaForm';
 import { servicoService, etapaService, tarefaService } from '@/api/services/servico.service';
 import type {
@@ -26,8 +26,6 @@ import type {
 import type {
     ServicoCreate,
     ServicoUpdate,
-    EtapaCreate,
-    EtapaUpdate,
     TarefaCreate,
     TarefaUpdate,
     ServicoListParams,
@@ -35,6 +33,7 @@ import type {
 import { toast } from 'sonner';
 
 export function ServicosPage() {
+    const navigate = useNavigate();
     const [servicos, setServicos] = useState<Servico[]>([]);
     const [loading, setLoading] = useState(true);
     
@@ -45,16 +44,13 @@ export function ServicosPage() {
     
     // Estados dos formulários
     const [servicoFormOpen, setServicoFormOpen] = useState(false);
-    const [etapaFormOpen, setEtapaFormOpen] = useState(false);
     const [tarefaFormOpen, setTarefaFormOpen] = useState(false);
     
     // Estados dos itens sendo editados
     const [servicoEditando, setServicoEditando] = useState<Servico | null>(null);
-    const [etapaEditando, setEtapaEditando] = useState<{ servico: Servico; etapa: Etapa } | null>(null);
     const [tarefaEditando, setTarefaEditando] = useState<{ servico: Servico; etapa: Etapa; tarefa: Tarefa } | null>(null);
     
     // Estados dos itens para adicionar
-    const [servicoParaEtapa, setServicoParaEtapa] = useState<Servico | null>(null);
     const [etapaParaTarefa, setEtapaParaTarefa] = useState<{ servico: Servico; etapa: Etapa } | null>(null);
     
     // Estados de confirmação de exclusão
@@ -209,35 +205,17 @@ export function ServicosPage() {
         }
     };
 
-    // Handlers de Etapa
-    const handleCreateEtapa = async (data: EtapaCreate | EtapaUpdate) => {
-        if (!servicoParaEtapa && !etapaEditando) return;
-        
-        const servico = servicoParaEtapa || etapaEditando?.servico;
-        if (!servico) return;
+    // Handlers de Etapa - Navegação para página
+    const handleAddEtapa = (servico: Servico) => {
+        navigate('/servicos/etapas/novo', {
+            state: { servico }
+        });
+    };
 
-        setSubmitting(true);
-        try {
-            if (etapaEditando) {
-                await etapaService.update(
-                    servico.id,
-                    etapaEditando.etapa.id,
-                    data as EtapaUpdate
-                );
-                toast.success('Etapa atualizada com sucesso!');
-            } else {
-                await etapaService.create(servico.id, data as EtapaCreate);
-                toast.success('Etapa criada com sucesso!');
-            }
-            setEtapaFormOpen(false);
-            setEtapaEditando(null);
-            setServicoParaEtapa(null);
-            await loadServicos();
-        } catch (error: any) {
-            toast.error(error.response?.data?.detail || 'Erro ao salvar etapa');
-        } finally {
-            setSubmitting(false);
-        }
+    const handleEditEtapa = (servico: Servico, etapa: Etapa) => {
+        navigate(`/servicos/etapas/${etapa.id}/editar`, {
+            state: { servico, etapa }
+        });
     };
 
     const handleDeleteEtapa = async () => {
@@ -551,16 +529,8 @@ export function ServicosPage() {
                 onDeleteServico={(servico) => {
                     setConfirmDelete({ type: 'servico', servico });
                 }}
-                onAddEtapa={(servico) => {
-                    setServicoParaEtapa(servico);
-                    setEtapaEditando(null);
-                    setEtapaFormOpen(true);
-                }}
-                onEditEtapa={(servico, etapa) => {
-                    setEtapaEditando({ servico, etapa });
-                    setServicoParaEtapa(null);
-                    setEtapaFormOpen(true);
-                }}
+                onAddEtapa={handleAddEtapa}
+                onEditEtapa={handleEditEtapa}
                 onDeleteEtapa={(servico, etapa) => {
                     setConfirmDelete({ type: 'etapa', servico, etapa });
                 }}
@@ -590,40 +560,6 @@ export function ServicosPage() {
                 onSubmit={handleCreateServico}
                 loading={submitting}
             />
-
-            {/* Formulário de Etapa */}
-            {servicoParaEtapa && (
-                <EtapaForm
-                    open={etapaFormOpen}
-                    onOpenChange={(open) => {
-                        setEtapaFormOpen(open);
-                        if (!open) {
-                            setServicoParaEtapa(null);
-                            setEtapaEditando(null);
-                        }
-                    }}
-                    servico={servicoParaEtapa}
-                    etapa={etapaEditando?.etapa || null}
-                    onSubmit={handleCreateEtapa}
-                    loading={submitting}
-                />
-            )}
-
-            {etapaEditando && !servicoParaEtapa && (
-                <EtapaForm
-                    open={etapaFormOpen}
-                    onOpenChange={(open) => {
-                        setEtapaFormOpen(open);
-                        if (!open) {
-                            setEtapaEditando(null);
-                        }
-                    }}
-                    servico={etapaEditando.servico}
-                    etapa={etapaEditando.etapa}
-                    onSubmit={handleCreateEtapa}
-                    loading={submitting}
-                />
-            )}
 
             {/* Formulário de Tarefa */}
             {etapaParaTarefa && (

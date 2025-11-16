@@ -43,7 +43,10 @@ apiClient.interceptors.response.use(
         }
 
         // Se erro 401 e não é retry, tenta refresh token
-        if (error.response?.status === 401 && !originalRequest?._retry) {
+        // MAS: não interceptar erros de login (endpoint /auth/login)
+        const isLoginEndpoint = originalRequest?.url?.includes('/auth/login');
+        
+        if (error.response?.status === 401 && !originalRequest?._retry && !isLoginEndpoint) {
             originalRequest._retry = true;
 
             try {

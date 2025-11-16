@@ -108,6 +108,7 @@ export interface Etapa {
     servico_id: number;
     nome: string;
     descricao?: string;
+    descricao_contrato?: string;  // HTML/rich text para contrato
     ordem: number;
     obrigatoria: boolean; // exibir (invertido do legado)
     escritorio_id: number;
@@ -398,7 +399,8 @@ export interface User {
 export interface UserEscritorio {
     id: number;
     escritorio: Escritorio;
-    perfil: string; // Perfil específico neste escritório
+    perfil: string; // Perfil específico neste escritório (compatibilidade)
+    perfis: string[]; // Lista de perfis neste escritório (novo)
     ativo: boolean;
     dataVinculo: string;
 }
@@ -408,7 +410,7 @@ export interface EscritorioContextInfo {
     nome_fantasia: string;
     razao_social: string;
     cor: string;
-    perfil?: string | null;
+    perfis: string[]; // Lista de perfis disponíveis neste escritório
 }
 
 export interface SetContextRequest {
